@@ -91,6 +91,10 @@ a:active, a:focus, a:visited, a:link {
     height: 100%;
 }
 
+#app-body[data-visible="false"] {
+    display: none;
+}
+
 #app-body #app-header {
     height: 40px;
     box-shadow: 0 1px 1px #333333;
