@@ -95,11 +95,11 @@ if (count($_FILES) > 0) {
         <div data-visible="false" class="caret-shadow caret-shadow-top"></div>
         <div data-visible="false" class="caret caret-top"></div>
 
+        <div class="dismiss-container">
+            <a class="modal-dialog-dismiss" href="">&times;</a>
+        </div>
         <!-- STEP 0 -->
         <div id="step0" class="modal-content" data-current="false">
-            <div class="dismiss-container">
-                <a class="modal-dialog-dismiss" href="">&times;</a>
-            </div>
             <div class="dialog-content text-center">
                 <img class="tutorial-logo" src="logo.png">
                 <p class="tutorial-title">
@@ -112,7 +112,7 @@ if (count($_FILES) > 0) {
                     Would you like to take a tour around the application?
                 </p>
 
-                <span class="btn">Take a tour</span>
+                <span class="btn" id="take-a-tour">Take a tour</span>
             </div>
         </div>
 
@@ -127,9 +127,6 @@ if (count($_FILES) > 0) {
                     </div>
                 </div>
                 <span class="step-title">Menu bar</span>
-                <div class="dismiss-container">
-                    <a class="modal-dialog-dismiss" href="">&times;</a>
-                </div>
             </div>
             <div class="dialog-content">
                 <p>
@@ -151,9 +148,6 @@ if (count($_FILES) > 0) {
                     <span class="icon">?</span>
                 </div>
                 <span class="step-title">Instructions</span>
-                <div class="dismiss-container">
-                    <a class="modal-dialog-dismiss" href="">&times;</a>
-                </div>
             </div>
             <div class="dialog-content">
                 <p>
@@ -181,9 +175,6 @@ if (count($_FILES) > 0) {
                     <span class="icon light">&#10004;</span>
                 </div>
                 <span class="step-title">Calculate route</span>
-                <div class="dismiss-container">
-                    <a class="modal-dialog-dismiss" href="">&times;</a>
-                </div>
             </div>
             <div class="dialog-content">
                 <p>
@@ -211,9 +202,6 @@ if (count($_FILES) > 0) {
                     <span class="icon light">&#10004;</span>
                 </div>
                 <span class="step-title">Additional information</span>
-                <div class="dismiss-container">
-                    <a class="modal-dialog-dismiss" href="">&times;</a>
-                </div>
             </div>
             <div class="dialog-content">
                 <p>
@@ -231,6 +219,22 @@ if (count($_FILES) > 0) {
 
                 <p>
                     <b>Next step:</b> Click the button 'Clear route', to clear this tutorial route.
+                </p>
+            </div>
+        </div>
+
+        <!-- FINAL STEP -->
+        <div id="final-step" class="modal-content" data-current="false">
+            <div class="dialog-content text-center">
+                <img class="tutorial-logo" src="logo.png">
+                <p class="tutorial-title">
+                    Congratulations!
+                </p>
+
+                <br>
+
+                <p>
+                    That's all! You're ready to use this application now.
                 </p>
             </div>
         </div>
@@ -476,31 +480,35 @@ if (count($_FILES) > 0) {
                   case 'find-the-way':
                       this.configureHelp();
                       MapManager.findTheWay();
-                      if (Tutorial.isRunning && Tutorial.currentStep == 1) {
+                      if (Tutorial.isRunning && Tutorial.currentStep == 2) {
                           Tutorial.handleStep();
                       }
                       break;
                   case 'go-back':
-                      window.location.reload();
+                      window.location.href = window.location.href;
                       break;
               }
           },
 
           exitFindTheWayModeListener: function(value) {
               if (!value) {
-                  this.clearHelp();
+                this.clearHelp();
+                var directions = MapManager.directionsDisplay.getDirections();
+                if(directions && directions.routes.length != 0) {
                   var p = document.createElement('p');
                   p.textContent = this.HELP_ROUTE;
                   this.help.appendChild(p);
                   var button = document.createElement('button');
                   button.classList.add('btn');
                   button.classList.add('btn-small');
+                  button.id = 'clear-route';
                   button.textContent = 'Clear route';
                   this.help.appendChild(button);
                   button.addEventListener('click', function() {
                       MapManager.clearRoute();
                       this.clearHelp();
                   }.bind(this, MapManager));
+                }
               }
           },
 
@@ -731,8 +739,6 @@ if (count($_FILES) > 0) {
         ?>
         MapManager.init();
 
-        <?php } ?>
-
         var Tutorial = {
             steps: {
                 0 : {
@@ -743,19 +749,28 @@ if (count($_FILES) > 0) {
                 1 : {
                     hash: '#step1',
                     position: 'right',
-                    element: '.icon-hamburger'
+                    element: '.icon-hamburger',
+                    paginator: true
                 },
                 2 : {
                     hash: '#step2',
-                    element: '#app-header .help'
+                    element: '#app-header .help',
+                    paginator: true
                 },
                 3 : {
                     hash: '#step3',
-                    element: '#app-header .help button#generate-route'
+                    element: '#app-header .help button#generate-route',
+                    paginator: true
                 },
                 4 : {
                     hash: '#step4',
-                    element: '#route-steps'
+                    element: '#route-steps',
+                    paginator: true
+                },
+                5: {
+                    hash: '#final-step',
+                    position: 'center',
+                    element: 'body'
                 }
             },
             panel: null,
@@ -766,33 +781,49 @@ if (count($_FILES) > 0) {
             verticalOffset: 5,
             menu: null,
             sidebar: null,
+            takeATourBtn: null,
             currentTop: null,
             currentLeft: null,
             isRunning: false,
             handleObserveListener: null,
+            handleStepListener: null,
             moveToLeftHandler: null,
             moveToRightHandler: null,
             TUTORIAL_WAYPOINTS: 1,
+            TUTORIAL_KEY: 'ls_tutorial',
 
-            init: function() {
+            _init: function() {
                 this.panel = document.querySelector('#tutorial');
                 this.menu = document.querySelector('.icon-hamburger');
                 this.sidebar = document.getElementById('app-sidebar');
+                this.takeATourBtn = document.querySelector('#take-a-tour');
                 this.paginator = this.panel.querySelector('.dialog-paginator');
                 this.handleObserveListener = this.handleObserve.bind(this);
                 this.moveToLeftHandler = this._moveFirstStepLeft.bind(this);
                 this.moveToRightHandler = this._moveFirstStepRight.bind(this);
+                this.handleStepListener = this.handleStep.bind(this);
                 this._bindEventsToPaginator();
-                this.startTutorialIfNeeded();
+                this._bindDismissEvents();
+                this.handleStep();
             },
 
             startTutorialIfNeeded: function() {
-                this.panel.dataset.visible = true;
-                this.updateCurrentStep();
-                this.openModal(this.steps[this.currentStep]);
-                //MOVE
-                this.isRunning = true;
-                this.currentStep++;
+                //Check local storage
+                if (typeof(Storage) !== 'undefined') {
+                    var tutorial = localStorage.getItem(this.TUTORIAL_KEY);
+                    if (!tutorial || tutorial !== 'true') {
+                        this._init();
+                    }
+                } else {
+                    this._init();
+                }
+            },
+
+            _bindEventToTakeATourBtn: function() {
+                this.takeATourBtn.addEventListener('click', function() {
+                    this.isRunning = true;
+                    this.handleStep();
+                }.bind(this));
             },
 
             _bindEventsToPaginator: function() {
@@ -805,24 +836,41 @@ if (count($_FILES) > 0) {
                 });
             },
 
+            _bindDismissEvents: function() {
+                var dismissBtn = this.panel.querySelector('.modal-dialog-dismiss');
+                dismissBtn.addEventListener('click', function(evt) {
+                    evt.preventDefault();
+                    this._closeTutorial();
+                }.bind(this));
+            },
+
             handleStep: function() {
-                this.currentStep++;
                 this.updateCurrentStep();
                 switch (this.currentStep) {
-                  case 1:
-                    this._bindEventsToFirstStep();
-                    break;
-                  case 2:
-                    this._unbindEventsToFirstStep();
-                    MapManager.observe('waypointsLength', this.handleObserveListener);
-                    break;
-                  case 3:
-                    MapManager.unobserve('waypointsLength', this.handleObserveListener);
-                    break;
-                  case 4:
-                    break;
+                    case 0:
+                        this.panel.dataset.visible = true;
+                        this._bindEventToTakeATourBtn();
+                        break;
+                    case 1:
+                        this._bindEventsToFirstStep();
+                        break;
+                    case 2:
+                        this._unbindEventsToFirstStep();
+                        MapManager.observe('waypointsLength', this.handleObserveListener);
+                        break;
+                    case 3:
+                        MapManager.unobserve('waypointsLength', this.handleObserveListener);
+                        break;
+                    case 4:
+                        this._bindEventsToClearBtn();
+                        break;
+                    case 5: 
+                        localStorage.setItem(this.TUTORIAL_KEY, true);
+                        this.isRunning = false;
+                        break;
                 }
                 this.openModal(this.steps[this.currentStep]);
+                this.currentStep++;
             },
 
             handleObserve: function(value) {
@@ -835,81 +883,83 @@ if (count($_FILES) > 0) {
                 var relativeElement = document.querySelector(step.element);
                 var boundingClientRect = relativeElement.getBoundingClientRect();
                 var position = 'auto';
+                var clientX = boundingClientRect.x || boundingClientRect.left;
+                var clientY = boundingClientRect.y || boundingClientRect.top;
 
                 if (step.position) {
                     position = step.position;
                 }
-console.info(position);
+
                 switch (position) {
                     case 'auto' :
                         //Top position
-                        if ((boundingClientRect.y - (this.panel.clientHeight + this.caretOffset)) > 0) {
-                            this.panel.style.top = (boundingClientRect.x - (this.panel.clientHeight + this.caretOffset)) + 'px';
-                            this.panel.style.left = boundingClientRect.x + 'px';
+                        if ((clientY - (this.panel.clientHeight + this.caretOffset)) > 0) {
+                            this.panel.style.top = (clientX - (this.panel.clientHeight + this.caretOffset)) + 'px';
+                            this.panel.style.left = clientX + 'px';
                             position = 'top';
                             break;
                         }
                         //Bottom position
-                        if ((window.innerHeight - (boundingClientRect.y + boundingClientRect.height +
+                        if ((window.innerHeight - (clientY + boundingClientRect.height +
                             this.panel.clientHeight + this.caretOffset)) > 0) {
-                            this.panel.style.top = (boundingClientRect.y + boundingClientRect.height + this.caretOffset) + 'px';
-                            if (boundingClientRect.x == 0) {
+                            this.panel.style.top = (clientY + boundingClientRect.height + this.caretOffset) + 'px';
+                            if (clientX == 0) {
                                 this.panel.style.left = this.horizontalOffset + 'px';
                             } else {
-                                this.panel.style.left = boundingClientRect.x + 'px';
+                                this.panel.style.left = clientX + 'px';
                             }
                             position = 'bottom';
                             break;
                         }
                         //Left position
-                        if ((boundingClientRect.x - (this.panel.clientWidth + this.caretOffset)) > 0) {
-                            if (boundingClientRect.x == 0) {
+                        if ((clientX - (this.panel.clientWidth + this.caretOffset)) > 0) {
+                            if (clientX == 0) {
                                 this.panel.style.top = this.verticalOffset + 'px';
                             } else {
-                                this.panel.style.top = boundingClientRect.y + 'px';
+                                this.panel.style.top = clientY + 'px';
                             }
-                            this.panel.style.left = (boundingClientRect.x - (this.panel.clientWidth + this.caretOffset)) + 'px';
+                            this.panel.style.left = (clientX - (this.panel.clientWidth + this.caretOffset)) + 'px';
                             position = 'left';
                             break;
                         }
                         //Right position
-                        if ((window.innerWidth - (boundingClientRect.x + boundingClientRect.width +
+                        if ((window.innerWidth - (clientX + boundingClientRect.width +
                             this.panel.clientWidth + this.caretOffset)) > 0) {
-                            if (boundingClientRect.x == 0) {
+                            if (clientX == 0) {
                                 this.panel.style.top = this.verticalOffset + 'px';
                             } else {
-                                this.panel.style.top = boundingClientRect.x + 'px';
+                                this.panel.style.top = clientX + 'px';
                             }
-                            this.panel.style.left = (boundingClientRect.x + boundingClientRect.width + this.caretOffset) + 'px';
+                            this.panel.style.left = (clientX + boundingClientRect.width + this.caretOffset) + 'px';
                             position = 'right';
                             break;
                         }
                     case 'left':
-                        if (boundingClientRect.x == 0) {
+                        if (clientX == 0) {
                             this.panel.style.top = this.verticalOffset + 'px';
                         } else {
-                            this.panel.style.top = boundingClientRect.x + 'px';
+                            this.panel.style.top = clientX + 'px';
                         }
-                        this.panel.style.left = (boundingClientRect.x - this.panel.clientWidth + this.caretOffset) + 'px';
+                        this.panel.style.left = (clientX - this.panel.clientWidth + this.caretOffset) + 'px';
                         break;
                     case 'right':
-                        if (boundingClientRect.x == 0) {
+                        if (clientX == 0) {
                             this.panel.style.top = this.verticalOffset + 'px';
                         } else {
-                            this.panel.style.top = boundingClientRect.x + 'px';
+                            this.panel.style.top = clientX + 'px';
                         }
-                        this.panel.style.left = (boundingClientRect.x + boundingClientRect.width + this.caretOffset) + 'px';
+                        this.panel.style.left = (clientX + boundingClientRect.width + this.caretOffset) + 'px';
                         break;
                     case 'top':
-                        this.panel.style.top = (boundingClientRect.x - this.panel.clientHeight + this.caretOffset) + 'px';
-                        this.panel.style.left = boundingClientRect.x + 'px';
+                        this.panel.style.top = (clientX - this.panel.clientHeight + this.caretOffset) + 'px';
+                        this.panel.style.left = clientX + 'px';
                         break;
                     case 'bottom':
-                        this.panel.style.top = (boundingClientRect.x + boundingClientRect.height + this.caretOffset) + 'px';
-                        if (boundingClientRect.x == 0) {
+                        this.panel.style.top = (clientX + boundingClientRect.height + this.caretOffset) + 'px';
+                        if (clientX == 0) {
                             this.panel.style.left = this.horizontalOffset + 'px';
                         } else {
-                            this.panel.style.left = boundingClientRect.x + 'px';
+                            this.panel.style.left = clientX + 'px';
                         }
                         break;
                     case 'center':
@@ -917,7 +967,6 @@ console.info(position);
                             x: window.innerWidth/2,
                             y: window.innerHeight/2
                         };
-                        console.info(center.x - (this.panel.clientWidth/2), center);
                         this.panel.style.left = center.x - (this.panel.clientWidth/2) + 'px';
                         this.panel.style.top = center.y - (this.panel.clientHeight/2) + 'px';
                         break;
@@ -1003,8 +1052,20 @@ console.info(position);
                 this.sidebar.removeEventListener('mouseout', this.moveToLeftHandler);
             },
 
+            _bindEventsToClearBtn: function() {
+                var btn = document.querySelector('button#clear-route');
+                btn.addEventListener('click', this.handleStepListener);
+            },
+
+            _unbindEventsToClearBtnIfNeeded: function() {
+                var btn = document.querySelector('button#clear-route');
+                if (btn)
+                    btn.removeEventListener('click', this.handleStepListener);
+            },
+
             updateCurrentStep: function() {
-                var stepElement = document.querySelector(this.steps[this.currentStep].hash);
+                var step = this.steps[this.currentStep];
+                var stepElement = document.querySelector(step.hash);
                 var currentModal = document.querySelector('div[data-current="true"]');
                 var currentPage = this.paginator.querySelector('a.active');
                 var stepPage = this.paginator.querySelector('a[data-page="' + this.currentStep + '"]');
@@ -1016,13 +1077,29 @@ console.info(position);
                     currentPage.classList.remove('active');
                 }
 
+                if (step.paginator) {
+                    this.paginator.querySelector('ul').dataset.visible = true;
+                } else {
+                    this.paginator.querySelector('ul').dataset.visible = false;
+                }
+
                 stepElement.dataset.current = true;
                 if(stepPage)
                     stepPage.classList.add('active');
+            },
+
+            _closeTutorial: function() {
+                //We need to clear or event listeners
+                this._unbindEventsToFirstStep();
+                MapManager.unobserve('waypointsLength', this.handleObserveListener);
+                this._unbindEventsToClearBtnIfNeeded();
+                this.isRunning = false;
+                this.panel.dataset.visible = false;
             }
         };
 
-        Tutorial.init();
+        Tutorial.startTutorialIfNeeded();
+        <?php } ?>
 
     </script>
 </body>
