@@ -31,6 +31,10 @@ html, body {
     text-align: center;
 }
 
+.text-left {
+    text-align: left;
+}
+
 a:active, a:focus, a:visited, a:link {
     outline: none;
 }
@@ -549,4 +553,35 @@ input {
 
 .circle .icon.light {
     color: #f7f7f7;
+}
+
+/** ADDRESS ERRORS **/
+.error-list {
+    height: 160px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.error-list table {
+    width: 100%;
+    text-align: center;
+}
+
+.error-list table thead {
+    background-color: #348ebb;
+    color: #ffffff;
+}
+
+.error-list table tr td {
+    padding: 10px;
+    border-bottom: solid 1px #348ebb;
+}
+
+.error-list table tr th:first-child {
+    padding-left: 10px;
+}
+
+.error-list table tr th:first-child,
+.error-list table tr td:first-child {
+    text-align: left;
 }

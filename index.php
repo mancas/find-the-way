@@ -93,6 +93,51 @@ if (count($_FILES) > 0) {
         </div>
     </div>
 
+    <!-- TEST CODE -->
+    <div id="address-errors" class="modal-dialog" data-visible="false">
+        <div data-visible="false" class="caret-shadow caret-shadow-top"></div>
+        <div data-visible="false" class="caret caret-top"></div>
+
+        <div class="dismiss-container">
+            <a class="modal-dialog-dismiss" href="">&times;</a>
+        </div>
+
+        <div class="modal-content">
+            <div class="dialog-header">
+                <div class="circle circle-red">
+                    <span class="icon light">!</span>
+                </div>
+                <span class="step-title">Errors</span>
+            </div>
+            <div class="dialog-content">
+                <p>
+                    A continuación se muestran las entradas, para las cuales, Google no ha sido capaz de especificar un marcador.
+                </p>
+
+                <br>
+
+                <p>
+                    Por favor, corrija el archivo .csv para que la aplicación funcione correctamente:
+                </p>
+
+                <br>
+
+                <div class="error-list">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Dirección calculada</th>
+                                <th>Orden</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="tutorial" class="modal-dialog" data-visible="false">
         <div data-visible="false" class="caret-shadow caret-shadow-top"></div>
         <div data-visible="false" class="caret caret-top"></div>
@@ -365,7 +410,148 @@ if (count($_FILES) > 0) {
 
                 return _observable;
             }
-        }
+        };
+
+        var Modal = {
+            caretOffset: 20,
+            horizontalOffset: 5,
+            verticalOffset: 5,
+
+            openModal: function(element, relativeElement, position) {
+                var boundingClientRect = relativeElement.getBoundingClientRect();
+                var clientX = boundingClientRect.x || boundingClientRect.left;
+                var clientY = boundingClientRect.y || boundingClientRect.top;
+
+                if (!position) {
+                    position = 'auto';
+                }
+
+                switch (position) {
+                    case 'auto' :
+                        //Top position
+                        if ((clientY - (element.clientHeight + this.caretOffset)) > 0) {
+                            element.style.top = (clientX - (elementclientHeight + this.caretOffset)) + 'px';
+                            element.style.left = clientX + 'px';
+                            position = 'top';
+                            break;
+                        }
+                        //Bottom position
+                        if ((window.innerHeight - (clientY + boundingClientRect.height +
+                            element.clientHeight + this.caretOffset)) > 0) {
+                            element.style.top = (clientY + boundingClientRect.height + this.caretOffset) + 'px';
+                            if (clientX == 0) {
+                                element.style.left = this.horizontalOffset + 'px';
+                            } else {
+                                element.style.left = clientX + 'px';
+                            }
+                            position = 'bottom';
+                            break;
+                        }
+                        //Left position
+                        if ((clientX - (element.clientWidth + this.caretOffset)) > 0) {
+                            if (clientX == 0) {
+                                element.style.top = this.verticalOffset + 'px';
+                            } else {
+                                element.style.top = clientY + 'px';
+                            }
+                            element.style.left = (clientX - (element.clientWidth + this.caretOffset)) + 'px';
+                            position = 'left';
+                            break;
+                        }
+                        //Right position
+                        if ((window.innerWidth - (clientX + boundingClientRect.width +
+                            element.clientWidth + this.caretOffset)) > 0) {
+                            if (clientX == 0) {
+                                element.style.top = this.verticalOffset + 'px';
+                            } else {
+                                element.style.top = clientX + 'px';
+                            }
+                            element.style.left = (clientX + boundingClientRect.width + this.caretOffset) + 'px';
+                            position = 'right';
+                            break;
+                        }
+                    case 'left':
+                        if (clientX == 0) {
+                            element.style.top = this.verticalOffset + 'px';
+                        } else {
+                            element.style.top = clientX + 'px';
+                        }
+                        element.style.left = (clientX - element.clientWidth + this.caretOffset) + 'px';
+                        break;
+                    case 'right':
+                        if (clientX == 0) {
+                            element.style.top = this.verticalOffset + 'px';
+                        } else {
+                            element.style.top = clientX + 'px';
+                        }
+                        element.style.left = (clientX + boundingClientRect.width + this.caretOffset) + 'px';
+                        break;
+                    case 'top':
+                        element.style.top = (clientX - element.clientHeight + this.caretOffset) + 'px';
+                        element.style.left = clientX + 'px';
+                        break;
+                    case 'bottom':
+                        element.style.top = (clientX + boundingClientRect.height + this.caretOffset) + 'px';
+                        if (clientX == 0) {
+                            element.style.left = this.horizontalOffset + 'px';
+                        } else {
+                            element.style.left = clientX + 'px';
+                        }
+                        break;
+                    case 'center':
+                        var center = {
+                            x: window.innerWidth/2,
+                            y: window.innerHeight/2
+                        };
+                        element.style.left = center.x - (element.clientWidth/2) + 'px';
+                        element.style.top = center.y - (element.clientHeight/2) + 'px';
+                        break;
+                }
+                this.configCaret(element, position);
+                element.dataset.visible = true;
+            },
+
+            configCaret: function(element, position) {
+                var caret = element.querySelector('.caret');
+                var caretShadow = element.querySelector('.caret-shadow');
+                this._sanitizeCarets(caret, caretShadow);
+                switch (position) {
+                    case 'top':
+                        caret.classList.add('caret-bottom');
+                        caretShadow.classList.add('caret-shadow-bottom');
+                        break;
+                    case 'bottom':
+                        caret.classList.add('caret-top');
+                        caretShadow.classList.add('caret-shadow-top');
+                        break;
+                    case 'left':
+                        caret.classList.add('caret-right');
+                        caretShadow.classList.add('caret-shadow-right');
+                        break;
+                    case 'right':
+                        caret.classList.add('caret-left');
+                        caretShadow.classList.add('caret-shadow-left');
+                        break;
+                    case 'center':
+                        caret.dataset.visible = false;
+                        caretShadow.dataset.visible = false;
+                        break;
+                }
+            },
+
+            _sanitizeCarets: function(caret, caretShadow) {
+                caret.classList.remove('caret-top');
+                caret.classList.remove('caret-left');
+                caret.classList.remove('caret-right');
+                caret.classList.remove('caret-bottom');
+                caretShadow.classList.remove('caret-shadow-top');
+                caretShadow.classList.remove('caret-shadow-left');
+                caretShadow.classList.remove('caret-shadow-right');
+                caretShadow.classList.remove('caret-shadow-bottom');
+                caret.dataset.visible = true;
+                caretShadow.dataset.visible = true;
+            }
+        };
 
         var UIManager = {
           inputs: null,
@@ -570,9 +756,12 @@ if (count($_FILES) > 0) {
           MAX_WAYPOINTS: 8,
           directionsSteps: null,
           wrongDirections: [],
+          wrongDirectionsContainer: null,
+          wrongDirectionsModalEnabled: false,
 
           init: function() {
               this.directionsSteps = document.querySelector('#route-steps');
+              this.wrongDirectionsContainer = document.querySelector('#address-errors');
               this.home = new google.maps.LatLng(37.407749, -5.947144);
               var mapOptions = {
                   center: this.home,
@@ -602,25 +791,21 @@ if (count($_FILES) > 0) {
               var self = this;
               forEach.call(this.points, function(element) {
                   var address = self._generateAddress(element);
-                  self.geocoder.geocode({'address': address + ', ' + city}, function(results, status) {
+                  self.geocoder.geocode({'address': address}, function(results, status) {
                       if (status == google.maps.GeocoderStatus.OK) {
-                          console.info(results);
                           var marker = new google.maps.Marker({
                               map: self.map,
                               position: results[0].geometry.location
                           });
                           self.markers.push(marker);
                       } else {
-                         console.warn('Revisar dirección: ' + element.orden);
+                         console.warn('Revisar dirección: ' + element.orden + ' ' + status);
+                         console.info(results);
                          self.wrongDirections.push(element);
+                         self.addWrongDirection(element, address);
                       }
                   });
               });
-
-              //TESTING CODE
-              if (this.wrongDirections.length > 0) {
-
-              }
           },
 
           _generateAddress: function(element) {
@@ -646,6 +831,25 @@ if (count($_FILES) > 0) {
             computedAddress += ', ' + country;
 
             return computedAddress;
+          },
+
+          addWrongDirection: function(element, address) {
+            if (!this.wrongDirectionsModalEnabled) {
+                this.wrongDirectionsModalEnabled = true;
+                Modal.openModal(this.wrongDirectionsContainer, document.body, 'center');
+            }
+
+            var tr = document.createElement('tr');
+            var tdAddress = document.createElement('td');
+            var tdIndex = document.createElement('td');
+            tdAddress.textContent = address;
+            tdIndex.textContent = element.orden;
+
+            tr.appendChild(tdAddress);
+            tr.appendChild(tdIndex);
+
+            var tbody = this.wrongDirectionsContainer.querySelector('tbody');
+            tbody.appendChild(tr);
           },
 
           toggleEditMode: function() {
@@ -809,9 +1013,6 @@ if (count($_FILES) > 0) {
             panel: null,
             paginator: null,
             currentStep: 0,
-            caretOffset: 20,
-            horizontalOffset: 5,
-            verticalOffset: 5,
             menu: null,
             sidebar: null,
             takeATourBtn: null,
@@ -914,148 +1115,22 @@ if (count($_FILES) > 0) {
 
             openModal: function(step) {
                 var relativeElement = document.querySelector(step.element);
-                var boundingClientRect = relativeElement.getBoundingClientRect();
                 var position = 'auto';
-                var clientX = boundingClientRect.x || boundingClientRect.left;
-                var clientY = boundingClientRect.y || boundingClientRect.top;
 
                 if (step.position) {
                     position = step.position;
                 }
 
-                switch (position) {
-                    case 'auto' :
-                        //Top position
-                        if ((clientY - (this.panel.clientHeight + this.caretOffset)) > 0) {
-                            this.panel.style.top = (clientX - (this.panel.clientHeight + this.caretOffset)) + 'px';
-                            this.panel.style.left = clientX + 'px';
-                            position = 'top';
-                            break;
-                        }
-                        //Bottom position
-                        if ((window.innerHeight - (clientY + boundingClientRect.height +
-                            this.panel.clientHeight + this.caretOffset)) > 0) {
-                            this.panel.style.top = (clientY + boundingClientRect.height + this.caretOffset) + 'px';
-                            if (clientX == 0) {
-                                this.panel.style.left = this.horizontalOffset + 'px';
-                            } else {
-                                this.panel.style.left = clientX + 'px';
-                            }
-                            position = 'bottom';
-                            break;
-                        }
-                        //Left position
-                        if ((clientX - (this.panel.clientWidth + this.caretOffset)) > 0) {
-                            if (clientX == 0) {
-                                this.panel.style.top = this.verticalOffset + 'px';
-                            } else {
-                                this.panel.style.top = clientY + 'px';
-                            }
-                            this.panel.style.left = (clientX - (this.panel.clientWidth + this.caretOffset)) + 'px';
-                            position = 'left';
-                            break;
-                        }
-                        //Right position
-                        if ((window.innerWidth - (clientX + boundingClientRect.width +
-                            this.panel.clientWidth + this.caretOffset)) > 0) {
-                            if (clientX == 0) {
-                                this.panel.style.top = this.verticalOffset + 'px';
-                            } else {
-                                this.panel.style.top = clientX + 'px';
-                            }
-                            this.panel.style.left = (clientX + boundingClientRect.width + this.caretOffset) + 'px';
-                            position = 'right';
-                            break;
-                        }
-                    case 'left':
-                        if (clientX == 0) {
-                            this.panel.style.top = this.verticalOffset + 'px';
-                        } else {
-                            this.panel.style.top = clientX + 'px';
-                        }
-                        this.panel.style.left = (clientX - this.panel.clientWidth + this.caretOffset) + 'px';
-                        break;
-                    case 'right':
-                        if (clientX == 0) {
-                            this.panel.style.top = this.verticalOffset + 'px';
-                        } else {
-                            this.panel.style.top = clientX + 'px';
-                        }
-                        this.panel.style.left = (clientX + boundingClientRect.width + this.caretOffset) + 'px';
-                        break;
-                    case 'top':
-                        this.panel.style.top = (clientX - this.panel.clientHeight + this.caretOffset) + 'px';
-                        this.panel.style.left = clientX + 'px';
-                        break;
-                    case 'bottom':
-                        this.panel.style.top = (clientX + boundingClientRect.height + this.caretOffset) + 'px';
-                        if (clientX == 0) {
-                            this.panel.style.left = this.horizontalOffset + 'px';
-                        } else {
-                            this.panel.style.left = clientX + 'px';
-                        }
-                        break;
-                    case 'center':
-                        var center = {
-                            x: window.innerWidth/2,
-                            y: window.innerHeight/2
-                        };
-                        this.panel.style.left = center.x - (this.panel.clientWidth/2) + 'px';
-                        this.panel.style.top = center.y - (this.panel.clientHeight/2) + 'px';
-                        break;
-                }
+                Modal.openModal(this.panel, relativeElement, position);
                 this.currentLeft = this.panel.style.left;
                 this.currentTop = this.panel.style.top;
-                this.configCaret(position);
-                this.panel.dataset.visible = true;
-            },
-
-            configCaret: function(position) {
-                var caret = this.panel.querySelector('.caret');
-                var caretShadow = this.panel.querySelector('.caret-shadow');
-                this._sanitizeCarets(caret, caretShadow);
-                switch (position) {
-                    case 'top':
-                        caret.classList.add('caret-bottom');
-                        caretShadow.classList.add('caret-shadow-bottom');
-                        break;
-                    case 'bottom':
-                        caret.classList.add('caret-top');
-                        caretShadow.classList.add('caret-shadow-top');
-                        break;
-                    case 'left':
-                        caret.classList.add('caret-right');
-                        caretShadow.classList.add('caret-shadow-right');
-                        break;
-                    case 'right':
-                        caret.classList.add('caret-left');
-                        caretShadow.classList.add('caret-shadow-left');
-                        break;
-                    case 'center':
-                        caret.dataset.visible = false;
-                        caretShadow.dataset.visible = false;
-                        break;
-                }
-            },
-
-            _sanitizeCarets: function(caret, caretShadow) {
-                caret.classList.remove('caret-top');
-                caret.classList.remove('caret-left');
-                caret.classList.remove('caret-right');
-                caret.classList.remove('caret-bottom');
-                caretShadow.classList.remove('caret-shadow-top');
-                caretShadow.classList.remove('caret-shadow-left');
-                caretShadow.classList.remove('caret-shadow-right');
-                caretShadow.classList.remove('caret-shadow-bottom');
-                caret.dataset.visible = true;
-                caretShadow.dataset.visible = true;
             },
 
             _moveFirstStepRight: function() {
                 var sidebarWidth = window.getComputedStyle(this.sidebar, null).getPropertyValue('width');
                 var menuHeight = window.getComputedStyle(this.menu, null).getPropertyValue('height');
-                this.panel.style.left = parseInt(sidebarWidth) + this.caretOffset + 'px';
-                this.panel.style.top = parseInt(menuHeight) + this.verticalOffset + 'px';
+                this.panel.style.left = parseInt(sidebarWidth) + Modal.caretOffset + 'px';
+                this.panel.style.top = parseInt(menuHeight) + Modal.verticalOffset + 'px';
             },
 
             _moveFirstStepLeft: function() {
