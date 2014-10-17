@@ -569,6 +569,7 @@ if (count($_FILES) > 0) {
           markers: [],
           MAX_WAYPOINTS: 8,
           directionsSteps: null,
+          wrongDirections: [],
 
           init: function() {
               this.directionsSteps = document.querySelector('#route-steps');
@@ -600,8 +601,7 @@ if (count($_FILES) > 0) {
               var forEach = Array.prototype.forEach;
               var self = this;
               forEach.call(this.points, function(element) {
-                  var address = element.address;
-                  var city = element.localidad;
+                  var address = self._generateAddress(element);
                   self.geocoder.geocode({'address': address + ', ' + city}, function(results, status) {
                       if (status == google.maps.GeocoderStatus.OK) {
                           console.info(results);
@@ -611,10 +611,41 @@ if (count($_FILES) > 0) {
                           });
                           self.markers.push(marker);
                       } else {
-                         console.error("Geocode was not successful for the following reason: " + status);
+                         console.warn('Revisar dirección: ' + element.orden);
+                         self.wrongDirections.push(element);
                       }
                   });
               });
+
+              //TESTING CODE
+              if (this.wrongDirections.length > 0) {
+
+              }
+          },
+
+          _generateAddress: function(element) {
+            var address = element.direccion;
+            var postalCode = element.postal;
+            var population = element.poblacion;
+            var township = element.municipio;
+            var province = element.provincia;
+            var country = 'España';
+            var computedAddress = address;
+            if (population.length > 0) {
+                computedAddress += ', ' + population;
+            }
+
+            if (postalCode.length > 0) {
+                computedAddress += ', ' + postalCode;
+            }
+
+            if (township.length > 0) {
+                computedAddress += ', ' + township;
+            }
+
+            computedAddress += ', ' + country;
+
+            return computedAddress;
           },
 
           toggleEditMode: function() {
