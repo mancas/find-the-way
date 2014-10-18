@@ -14,6 +14,14 @@ html, body {
     visibility: hidden;
 }
 
+*[data-draggable="true"] {
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: move;
+}
+
 .img-responsive {
     height: auto;
     max-width: 100%;
@@ -62,6 +70,12 @@ a:active, a:focus, a:visited, a:link {
 
 .btn-small {
     padding: 2px 8px;
+}
+
+.dragging {
+    transition: none !important;
+    -webkit-transition: none !important;
+    -moz-transition: none !important;
 }
 
 /** MAIN CONTENT **/

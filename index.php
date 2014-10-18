@@ -308,6 +308,7 @@ if (count($_FILES) > 0) {
 
     <script type="text/javascript" src="js/ui.js"> </script>
     <script type="text/javascript" src="js/observable.js"> </script>
+    <script type="text/javascript" src="js/draggable.js"> </script>
 
     <?php if(isset($filename)) { ?>
     <script type="text/javascript"
@@ -348,6 +349,7 @@ if (count($_FILES) > 0) {
         ?>
         MapManager.init();
         Tutorial.startTutorialIfNeeded();
+        new Draggable(document.getElementById('tutorial'));
         <?php } ?>
 
     </script>
