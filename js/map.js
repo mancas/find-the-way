@@ -14,7 +14,7 @@ var MapManager = Observable.init({
     wrongDirections: [],
     wrongDirectionsContainer: null,
     wrongDirectionsModalEnabled: false,
-    chunk: 20,
+    chunk: 5,
 
     init: function() {
         this.directionsSteps = document.querySelector('#route-steps');
@@ -46,7 +46,25 @@ var MapManager = Observable.init({
     setMarkers: function() {
         var forEach = Array.prototype.forEach;
         var self = this;
-        forEach.call(this.points, function(element) {
+
+        var nextChunk = function(iteration) {
+            var i = iteration;
+            var end = (iteration + self.chunk) > self.points.length ?
+                self.points.length - 1 : iteration + self.chunk;
+            if (end == (self.points.length - 1)) {
+                return;
+            }
+
+            for (i; i < end; i++) {
+                addMarker(self.points[i]);
+            }
+console.info(i, end);
+            setTimeout(function() {
+                nextChunk(i);
+            }, 5000);
+        }.bind(this);
+
+        var addMarker = function(element) {
             var address = self._generateAddress(element);
             if (!address) {
                 return;
@@ -66,7 +84,9 @@ var MapManager = Observable.init({
                     self.addWrongDirection(element, address);
                 }
             });
-        });
+        };
+
+        nextChunk(0);
     },
 
     _generateAddress: function(element) {
@@ -94,6 +114,12 @@ var MapManager = Observable.init({
         }
 
         computedAddress += ', ' + country;
+
+        if (address.length == 0) {
+            this.wrongDirections.push(element);
+            this.addWrongDirection(element, computedAddress);
+            return;
+        }
 
         return computedAddress;
     },
