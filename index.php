@@ -39,14 +39,14 @@ if (count($_FILES) > 0) {
                 <form id="file-form" method="post" action="<?php $_SERVER['PHP_SELF'] ?>" enctype="multipart/form-data">
                     <div class="row-form">
                         <div class="addon">
-                            <input type="text" id="fake-file" data-placeholder="Choose file">
+                            <input type="text" id="fake-file" data-placeholder="Elegir archivo">
                             <span class="group-addon clickable upload">
-                                Upload
+                                Subir
                             </span>
                         </div>
                         <input type="file" name="csv-file" class="hidden">
                     </div>
-                    <span class="field-help">Upload your CSV file with the data you want to be displayed in the map.</span>
+                    <span class="field-help">Sube tu fichero CSV con los datos que quieres mostrar en el mapa.</span>
                     <?php
                         if ($error) {
                     ?>
@@ -82,8 +82,13 @@ if (count($_FILES) > 0) {
                         </a>
                     </li>
                     <li>
+                        <a href="filters" data-action="filters">
+                            Filtros
+                        </a>
+                    </li>
+                    <li>
                         <a href="go-back" data-action="go-back">
-                            Go back
+                            Atrás
                         </a>
                     </li>
                 </ul>
@@ -138,6 +143,28 @@ if (count($_FILES) > 0) {
         </div>
     </div>
 
+    <div id="filters" class="modal-dialog modal-dialog-xs" data-visible="false">
+        <div data-visible="false" class="caret-shadow caret-shadow-top"></div>
+        <div data-visible="false" class="caret caret-top"></div>
+
+        <div class="dismiss-container">
+            <a class="modal-dialog-dismiss" href="">&times;</a>
+        </div>
+
+        <div class="modal-content">
+            <div class="dialog-header">
+                <div class="circle circle-green">
+                    <span class="icon-filter"></span>
+                </div>
+                <span class="step-title">Filtros</span>
+            </div>
+            <div class="dialog-content">
+                <ul class="filters-container">
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <div id="tutorial" class="modal-dialog" data-visible="false">
         <div data-visible="false" class="caret-shadow caret-shadow-top"></div>
         <div data-visible="false" class="caret caret-top"></div>
@@ -156,10 +183,10 @@ if (count($_FILES) > 0) {
                 <br>
 
                 <p>
-                    Would you like to take a tour around the application?
+                    ¿Te gustaría dar un paseo por la aplicación?
                 </p>
 
-                <span class="btn" id="take-a-tour">Take a tour</span>
+                <span class="btn" id="take-a-tour">Empieza el tour</span>
             </div>
         </div>
 
@@ -177,13 +204,13 @@ if (count($_FILES) > 0) {
             </div>
             <div class="dialog-content">
                 <p>
-                    This is the menu bar. If you hover it you will see all the tasks you can do with just one click.
+                    Esta es la barra de menú. Si colocas el puntero encima, podrás ver todas las cosas que puedes hacer con solo un click.
                 </p>
 
                 <br>
 
                 <p>
-                    <b>Next step:</b> Try clicking in "Find the way" now.
+                    <b>Siguiente paso:</b> Ahora prueba a hacer click en "Find my way".
                 </p>
             </div>
         </div>
@@ -194,23 +221,23 @@ if (count($_FILES) > 0) {
                 <div class="circle circle-red">
                     <span class="icon">?</span>
                 </div>
-                <span class="step-title">Instructions</span>
+                <span class="step-title">Instrucciones</span>
             </div>
             <div class="dialog-content">
                 <p>
-                    Here you could find the instruction to generate your route and some advices.
+                    Aquí puedes encontrar información para generar la ruta y algunos consejos.
                 </p>
 
                 <br>
 
                 <p>
-                    Notice that your home point is set in Rentasoft S.A. so the route will starts and finish in that point.
+                    Ten en cuenta que punto de partida y finalización es Rentasoft S.A. Además, puedes aplicar filtros para restringir los puntos que aparecen en pantalla.
                 </p>
 
                 <br>
 
                 <p>
-                    <b>Next step:</b> Follow the instructions to add a waypoint to the route.
+                    <b>Siguiente paso:</b> Sigue las instrucciones para añadir un waypoint a tu ruta.
                 </p>
             </div>
         </div>
@@ -221,23 +248,17 @@ if (count($_FILES) > 0) {
                 <div class="circle circle-yellow">
                     <span class="icon light">&#10004;</span>
                 </div>
-                <span class="step-title">Calculate route</span>
+                <span class="step-title">Calcular la ruta</span>
             </div>
             <div class="dialog-content">
                 <p>
-                    Now click in this button to generate the optimized route for your waypoints.
+                    Haciendo click en este botón generarás la ruta optima que pasa por todos los waypoints que has seleccionado.
                 </p>
 
                 <br>
 
                 <p>
-                    Notice that your home point is set in Rentasoft S.A. so the route will starts and finish in that point.
-                </p>
-
-                <br>
-
-                <p>
-                    <b>Next step:</b> Click the button to calculate the optimized route for your waypoints.
+                    <b>Siguiente paso:</b> Haz click en el botón para calcular la ruta óptima.
                 </p>
             </div>
         </div>
@@ -248,24 +269,24 @@ if (count($_FILES) > 0) {
                 <div class="circle circle-green">
                     <span class="icon light">&#10004;</span>
                 </div>
-                <span class="step-title">Additional information</span>
+                <span class="step-title">Información adicional</span>
             </div>
             <div class="dialog-content">
                 <p>
-                    Here you have the directions steps you need to follow to complete your route.
+                    Aquí tienes las indicaciones que debes seguir para completar tu recorrido.
                 </p>
 
                 <br>
 
                 <p>
-                    Remember that you can drag the route to fit your necessities, so if you do it, the directions steps will be updated automatically.
-                    Besides, you can clear the route and start again if you want.
+                    Recuerda que puedes arrastrar la ruta para adaptarla a tus necesidades, si lo haces, las indicaciones se actualizarán automáticamente.
+                    Además puedes borrar la ruta y empezar de nuevo cuando quieras.
                 </p>
 
                 <br>
 
                 <p>
-                    <b>Next step:</b> Click the button 'Clear route', to clear this tutorial route.
+                    <b>Siguiente paso:</b> Haz click en el botón 'Borrar ruta', para borrar la ruta de este tutorial.
                 </p>
             </div>
         </div>
@@ -275,13 +296,13 @@ if (count($_FILES) > 0) {
             <div class="dialog-content text-center">
                 <img class="tutorial-logo" src="logo.png">
                 <p class="tutorial-title">
-                    Congratulations!
+                    ¡Felicidades!
                 </p>
 
                 <br>
 
                 <p>
-                    That's all! You're ready to use this application now.
+                    ¡Eso es todo! Ahora estas listo para manejar la aplicación.
                 </p>
             </div>
         </div>
@@ -301,7 +322,7 @@ if (count($_FILES) > 0) {
             <div class="circle circle-blue">
                 <span class="icon">!</span>
             </div>
-            <span class="title">Directions Steps</span>
+            <span class="title">Indicaciones</span>
         </div>
         <div id="step-list"></div>
     </div>

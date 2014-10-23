@@ -18,15 +18,19 @@ Draggable.prototype.handleDrag = function(evt) {
     if (this._dragging) {
         var incX = evt.clientX - this._currentPositionX;
         var incY = evt.clientY - this._currentPositionY;
+        var elemX = parseInt(this._element.style.left) + incX;
+        var elemY = parseInt(this._element.style.top) + incY;
+
+        // Update current position
         this._currentPositionX = evt.clientX;
         this._currentPositionY = evt.clientY;
-        var elemX = parseInt(this._element.style.left) + incX;
         elemX = this.checkLeftRight(elemX, this._element.clientWidth);
-        var elemY = parseInt(this._element.style.top) + incY;
+        elemY = this.checkTopBottom(elemY, this._element.clientHeight);
         this._element.style.left = elemX + 'px';
-        this._element.style.top = (parseInt(this._element.style.top) + incY) + 'px';
+        this._element.style.top = elemY + 'px';
+        return false;
     }
-    return false;
+    return true;
 };
 
 Draggable.prototype.handleDrop = function(evt) {
@@ -36,15 +40,29 @@ Draggable.prototype.handleDrop = function(evt) {
 };
 
 Draggable.prototype.checkLeftRight = function(elementX, elementWidth) {
-    //Case left side
+    // Case left side
     if (elementX < 0) {
         return 0;
     } else {
-        console.info(elementX + elementWidth, window.innerWidth);
+        // Case right side
         if ((elementX + elementWidth) > document.body.clientWidth) {
             return parseInt(document.body.clientWidth) - elementWidth;
         }
     }
 
     return elementX;
+};
+
+Draggable.prototype.checkTopBottom = function(elementY, elementHeight) {
+    // Case top side
+    if (elementY < 0) {
+        return 0;
+    } else {
+        // Case bottom side
+        if ((elementY + elementHeight) > document.body.clientHeight) {
+            return parseInt(document.body.clientHeight) - elementHeight;
+        }
+    }
+
+    return elementY;
 };

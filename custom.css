@@ -22,6 +22,12 @@ html, body {
   cursor: move;
 }
 
+ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
 .img-responsive {
     height: auto;
     max-width: 100%;
@@ -240,9 +246,6 @@ a:active, a:focus, a:visited, a:link {
 }
 
 .sidebar ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
     overflow: hidden;
     width: 100%;
 }
@@ -345,7 +348,8 @@ input {
     font-style: italic;
     color: #555555;
     display: block;
-    margin-top: 15px;
+    margin: 15px auto 0 auto;
+    max-width: 500px;
 }
 
 /** TUTORIAL **/
@@ -363,6 +367,15 @@ input {
     top: 10px;
     left: 10px;
     max-width: 450px;
+    min-width: 370px;
+}
+
+.modal-dialog.modal-dialog-xs {
+    min-width: 170px;
+}
+
+.modal-dialog img {
+    pointer-events: none;
 }
 
 .modal-dialog[data-visible="true"] {
@@ -433,11 +446,9 @@ input {
 }
 
 .modal-dialog .dialog-paginator ul {
-    list-style: none;
     height: auto;
     overflow: hidden;
     text-align: right;
-    padding: 0;
 }
 
 .modal-dialog .dialog-paginator ul li {
@@ -538,6 +549,7 @@ input {
     width: 40px;
     display: block;
     float: left;
+    position: relative;
 }
 
 .circle-blue {
@@ -569,6 +581,16 @@ input {
     color: #f7f7f7;
 }
 
+.icon-filter {
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: center center no-repeat url(filter.png);
+    background-size: 25px;
+}
+
 /** ADDRESS ERRORS **/
 .error-list {
     height: 160px;
@@ -598,4 +620,27 @@ input {
 .error-list table tr th:first-child,
 .error-list table tr td:first-child {
     text-align: left;
+}
+
+/** FILTERS **/
+
+.filters-container li {
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.filters-container li:last-child {
+    margin-bottom: 0;
+}
+
+.filters-container li input {
+    height: auto;
+    margin-right: 15px;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+.filters-container li label {
+    font-weight: bold;
+    cursor: pointer;
 }

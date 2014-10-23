@@ -4,7 +4,7 @@ var Modal = {
     verticalOffset: 5,
     dismissHandler: null,
 
-    openModal: function(element, relativeElement, position) {
+    openModal: function(element, relativeElement, position, positionX, positionY) {
         var boundingClientRect = relativeElement.getBoundingClientRect();
         var clientX = boundingClientRect.x || boundingClientRect.left;
         var clientY = boundingClientRect.y || boundingClientRect.top;
@@ -93,6 +93,10 @@ var Modal = {
                 element.style.left = center.x - (element.clientWidth/2) + 'px';
                 element.style.top = center.y - (element.clientHeight/2) + 'px';
                 break;
+            case 'custom':
+                element.style.left = positionX + 'px';
+                element.style.top = positionY + 'px';
+                break;
         }
         this.configCaret(element, position);
         this.configDismiss(element);
@@ -128,6 +132,7 @@ var Modal = {
                 caret.classList.add('caret-left');
                 caretShadow.classList.add('caret-shadow-left');
                 break;
+            case 'custom':
             case 'center':
                 caret.dataset.visible = false;
                 caretShadow.dataset.visible = false;

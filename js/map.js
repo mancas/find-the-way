@@ -9,6 +9,8 @@ var MapManager = Observable.init({
     waypoints: [],
     waypointsLength: 0,
     markers: [],
+    filters: [],
+    filtersApplied: [],
     MAX_WAYPOINTS: 8,
     directionsSteps: null,
     wrongDirections: [],
@@ -37,10 +39,20 @@ var MapManager = Observable.init({
             mapOptions);
         this.setMarkers();
         this.directionsDisplay.setMap(this.map);
+        UIManager.createFilters(this.filters);
+        this._bindEventsToFilters();
     },
 
     addPoint: function(point) {
         this.points.push(point);
+        this.addFilter(point);
+    },
+
+    addFilter: function(point) {
+        var postalCode = parseInt(point.postal);
+        if (this.filters.indexOf(postalCode) == -1) {
+            this.filters.push(postalCode);
+        }
     },
 
     setMarkers: function() {
@@ -50,15 +62,16 @@ var MapManager = Observable.init({
         var nextChunk = function(iteration) {
             var i = iteration;
             var end = (iteration + self.chunk) > self.points.length ?
-                self.points.length - 1 : iteration + self.chunk;
-            if (end == (self.points.length - 1)) {
+                self.points.length : iteration + self.chunk;
+                console.info(end);
+            if (i == self.points.length) {
                 return;
             }
 
             for (i; i < end; i++) {
                 addMarker(self.points[i]);
             }
-console.info(i, end);
+
             setTimeout(function() {
                 nextChunk(i);
             }, 5000);
@@ -76,10 +89,10 @@ console.info(i, end);
                         map: self.map,
                         position: results[0].geometry.location
                     });
+                    marker.postalCode = parseInt(element.postal);
                     self.markers.push(marker);
                 } else {
                     console.warn('Revisar dirección: ' + element.orden + ' ' + status);
-                    console.info(results);
                     self.wrongDirections.push(element);
                     self.addWrongDirection(element, address);
                 }
@@ -236,5 +249,43 @@ console.info(i, end);
         setTimeout(function() {
             this.directionsDisplay.setDirections({routes: [], status: "OK", mc: []});
         }.bind(this), 300)
+    },
+
+    _bindEventsToFilters: function() {
+        var forEach = Array.prototype.forEach;
+        var filters = UIManager.filtersContainer.querySelectorAll('input');
+
+        forEach.call(filters, function(filter) {
+            filter.addEventListener('change', this.applyFilter.bind(this));
+        }.bind(this));
+    },
+
+    applyFilter: function(evt) {
+        var checkbox = evt.target;
+        var forEach = Array.prototype.forEach;
+        var postalCode = parseInt(checkbox.value);
+        if (checkbox.checked) {
+            this.filtersApplied.push(postalCode);
+        } else {
+            var indexToRemove = this.filtersApplied.indexOf(postalCode);
+            this.filtersApplied.splice(indexToRemove, 1);
+        }
+        forEach.call(this.markers, function(marker) {
+            if (checkbox.checked) {
+                if (marker.postalCode != postalCode &&
+                    this.filtersApplied.indexOf(marker.postalCode) == -1) {
+                    marker.setVisible(false);
+                } else {
+                    marker.setVisible(true);
+                }
+            } else {
+                if ((this.filtersApplied.length == 0) ||
+                    this.filtersApplied.indexOf(marker.postalCode) != -1) {
+                    marker.setVisible(true);
+                } else {
+                    marker.setVisible(false);
+                }
+            }
+        }.bind(this));
     }
 });

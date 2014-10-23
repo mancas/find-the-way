@@ -7,9 +7,11 @@ var UIManager = {
     menu: null,
     sidebar: null,
     help: null,
-    HELP_WAYPOINTS: 'Click on the markers to add them as waypoints. When you have finished, click in \'Calculate route\'',
-    HELP_ROUTE: 'Remember that you can drag the route to fit your necessities. You can clear the route by clicking in \'Clear route\'',
+    HELP_WAYPOINTS: 'Haz click en los marcadores para añadirlos como waypoints. Cuando hayas acabado haz click en \'Calcular ruta\'',
+    HELP_ROUTE: 'Recuerda que puedes arrastrar la ruta para ajustarla a tus necesidades. Puedes borrar la ruta haciendo click en \'Borrar ruta\'',
     exitFindTheWayModeHandler: null,
+    filters: null,
+    filtersContainer: null,
 
     init: function() {
         this.inputs = document.querySelectorAll('input');
@@ -20,6 +22,8 @@ var UIManager = {
         this.menu = document.querySelector('.icon-hamburger');
         this.sidebar = document.querySelector('.sidebar');
         this.help = document.querySelector('#app-header .help');
+        this.filters = document.querySelector('#filters');
+        this.filtersContainer = document.querySelector('#filters ul.filters-container');
         this.exitFindTheWayModeHandler = this.exitFindTheWayModeListener.bind(this);
         this._setPlaceholders();
         this.bindEvents();
@@ -117,6 +121,9 @@ var UIManager = {
                     Tutorial.handleStep();
                 }
                 break;
+            case 'filters':
+                this.toggleFilters();
+                break;
             case 'go-back':
                 window.location.href = window.location.href;
                 break;
@@ -135,7 +142,7 @@ var UIManager = {
             button.classList.add('btn');
             button.classList.add('btn-small');
             button.id = 'clear-route';
-            button.textContent = 'Clear route';
+            button.textContent = 'Borrar ruta';
             this.help.appendChild(button);
             button.addEventListener('click', function() {
                 MapManager.clearRoute();
@@ -155,14 +162,14 @@ var UIManager = {
         button.id = 'generate-route';
         button.classList.add('btn');
         button.classList.add('btn-small');
-        button.textContent = 'Calculate route';
+        button.textContent = 'Calcular ruta';
         button.disabled = true;
         this.help.appendChild(button);
         button.addEventListener('click', MapManager.generateRoute.bind(MapManager));
         var cancelButton = document.createElement('button');
         cancelButton.classList.add('btn');
         cancelButton.classList.add('btn-small');
-        cancelButton.textContent = 'Cancel';
+        cancelButton.textContent = 'Cancelar';
         this.help.appendChild(cancelButton);
         if (Tutorial.isRunning) {
             cancelButton.disabled = true;
@@ -182,5 +189,44 @@ var UIManager = {
     clearHelp: function() {
         this.help.innerHTML = '';
         MapManager.unobserve('isEditModeEnable', this.exitFindTheWayModeHandler);
+    },
+
+    createFilters: function(filters) {
+        var forEach = Array.prototype.forEach;
+
+        forEach.call(filters, function(filter) {
+            var item = this.createFilterListItem(filter);
+            this.filtersContainer.appendChild(item);
+        }.bind(this));
+
+        new Draggable(this.filters);
+    },
+
+    createFilterListItem: function(filter) {
+        var checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = filter;
+        checkbox.name = 'filter_' + filter;
+        checkbox.id = 'filter_' + filter;
+
+        var label = document.createElement('label');
+        label.textContent = filter;
+        label.classList.add('filter');
+        label.setAttribute('for', 'filter_' + filter);
+
+
+        var listItem = document.createElement('li');
+        listItem.appendChild(checkbox);
+        listItem.appendChild(label);
+
+        return listItem;
+    },
+
+    toggleFilters: function() {
+        if (this.filters.dataset.visible == 'true') {
+            this.filters.dataset.visible = false;
+        } else {
+            Modal.openModal(this.filters, document.body, 'custom', 40, 60);
+        }
     }
 };
