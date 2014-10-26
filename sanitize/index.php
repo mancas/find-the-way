@@ -17,6 +17,70 @@ if (count($_FILES) > 0) {
     } else {
         $error = true;
     }
+
+    class Sanitize {
+        private $sanitize_array_key = array(
+                    'á' => 'a',
+                    'é' => 'e',
+                    'í' => 'i',
+                    'ó' => 'o',
+                    'ú' => 'u',
+                    'Á' => 'A',
+                    'É' => 'E',
+                    'Í' => 'I',
+                    'Ó' => 'O',
+                    'Ú' => 'U',
+                    'ñ' => 'n',
+                    'Ñ' => 'N',
+                    'ç' => 'c',
+                    'ü' => 'u',
+                    'Ü' => 'u',
+                    '.' => '',
+                    ',' => '',
+                    ':' => '',
+                    ';' => '',
+                    '<' => '',
+                    '>' => '',
+                    '-' => '',
+                    '_' => '',
+                    '^' => '',
+                    '*' => '',
+                    '+' => '',
+                    '-' => '',
+                    '/' => '',
+                    '\\' => '',
+                    '[' => '',
+                    ']' => '',
+                    '{' => '',
+                    '}' => '',
+                    '(' => '',
+                    ')' => '',
+                    '=' => '',
+                    '%' => '',
+                    '$' => '',
+                    '#' => '',
+                    '"' => '',
+                    '!' => '',
+                    '¡' => '',
+                    '?' => '',
+                    '¿' => '',
+                    '&' => '',
+                    '¬' => '',
+                    'º' => '',
+                    'ª' => '',
+                    '|' => '',
+                    '@' => ''
+                    );
+
+        public function __contruct() {
+        }
+
+        public function sanitizeString($string) {
+            return strtr($string, $this->sanitize_array_key);
+        }
+    };
+
+    $sanitize = new Sanitize();
 }
 
 ?>
@@ -48,7 +112,7 @@ if (count($_FILES) > 0) {
                     </div>
                     <span class="field-help">Sube tu fichero CSV con los datos que se mostrarán en el mapa, para comprobar las direcciones y pre-procesarlo para que todo funcione correctamente.</span>
                     <?php
-                        if ($error) {
+                        if (isset($error)) {
                     ?>
                         <div class="alert-error">
                             <?php if(error == true) { ?>
@@ -150,7 +214,7 @@ if (count($_FILES) > 0) {
         Sanitize.addPoint({
 
             <?php foreach ($data as $index => $content) { ?>
-            <?php echo strtolower($csvHeader[$index]) . ' : \'' .  $content .'\''; ?><?php if($index != ($chunk - 1)) echo ', '; ?>
+            <?php echo $sanitize->sanitizeString(strtolower($csvHeader[$index])) . ' : \'' .  $content .'\''; ?><?php if($index != ($chunk - 1)) echo ', '; ?>
             <?php } ?>
         });
         <?php
