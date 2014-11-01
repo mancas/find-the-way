@@ -5,12 +5,11 @@ var Sanitize = {
     wrongDirectionsContainer: null,
     wrongDirectionsModalEnabled: false,
     chunk: 5,
-    loadingOverlay: null,
-    CSVContainer: null,
 
     init: function() {
         this.geocoder = new google.maps.Geocoder();
         this.wrongDirectionsContainer = document.querySelector('#address-errors');
+        this.getCSVFile();
     },
 
     addPoint: function(point) {
@@ -20,7 +19,7 @@ var Sanitize = {
     getCSVFile: function() {
         var forEach = Array.prototype.forEach;
         var self = this;
-        this.loadingOverlay.dataset.visible = true;
+        SanitizeUI.openLoadingOverlay();
 
         var nextChunk = function(iteration) {
             var i = iteration;
@@ -28,8 +27,8 @@ var Sanitize = {
                 self.points.length : iteration + self.chunk;
                 console.info(end);
             if (i == self.points.length) {
-                this.loadingOverlay.dataset.visible = false;
-                this.CSVContainer.dataset.visible = true;
+                SanitizeUI.closeLoadingOverlay();
+                self.convertToCSV();
                 return;
             }
 
@@ -56,8 +55,8 @@ var Sanitize = {
 
             self.geocoder.geocode({'address': address}, function(results, status) {
                 if (status == google.maps.GeocoderStatus.OK) {
-                    element.latitude = results[0].geometry.location.latitude;
-                    element.longitude = results[0].geometry.location.longitude;
+                    element.latitude = results[0].geometry.location.lat();
+                    element.longitude = results[0].geometry.location.lng();
                 } else {
                     console.warn('Revisar dirección: ' + element.orden + ' ' + status);
                     self.wrongDirections.push(element);
@@ -119,4 +118,34 @@ var Sanitize = {
         var tbody = this.wrongDirectionsContainer.querySelector('tbody');
         tbody.appendChild(tr);
     },
+
+    convertToCSV: function() {
+        var forEach = Array.prototype.forEach;
+        if (this.points.length === 0) {
+            return;
+        }
+
+        var keys = Object.keys(this.points[0]);
+        var header = '';
+        for (var i = 0; i < keys.length; i++) {
+            header += keys[i];
+            if (i != keys.length - 1) {
+                header += ';';
+            }
+        }
+        SanitizeUI.addCSVLine(header);
+
+        forEach.call(this.points, function(line) {
+            var csvLine = '';
+
+            for (var key in line) {
+                var column = line[key];
+                csvLine += column;
+                if (keys.indexOf(column) != (keys.length - 1)) {
+                    csvLine += ';';
+                }
+            }
+            SanitizeUI.addCSVLine(csvLine);
+        });
+    }
 }

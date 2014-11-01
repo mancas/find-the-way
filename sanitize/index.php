@@ -174,16 +174,30 @@ if (count($_FILES) > 0) {
         </div>
     </div>
 
-    <div class="loading-overlay">
+    <div class="loading-overlay dialog-center" data-visible="false">
+      <div class="overlay-wrapper dialog-wrapper">
         <span class="spin-loader"></span>
         <div class="overlay-header">
         </div>
         <div class="overlay-content">
             Procesando datos, esto puede tardar unos minutos...
         </div>
+      </div>
     </div>
 
-    <script type="text/javascript" src="../js/ui.js"> </script>
+    <div class="csv-container dialog-center" data-visible="false">
+        <form class="dialog-wrapper" action="download.php" method="POST">
+            <div class="csv-explain">
+                <span>
+                    Aquí tienes el fichero CSV procesado y listo para usarlo en Find The Way. Puedes ver el fichero pulsando en el botón que aparece más abajo.
+                </span>
+                <button type="submit" class="btn">Ver CSV</button>
+            </div>
+            <textarea name="file" hidden="hidden"></textarea>
+        </form>
+    </div>
+
+    <script type="text/javascript" src="../js/sanitize_ui.js"> </script>
 
     <?php if(isset($filename)) { ?>
     <script type="text/javascript"
@@ -194,7 +208,7 @@ if (count($_FILES) > 0) {
     <?php } ?>
 
     <script type="text/javascript">
-        UIManager.init();
+        SanitizeUI.init();
         <?php if (isset($filename)) {
             $file = fopen($filename, 'r');
             $line = 1;
@@ -212,7 +226,6 @@ if (count($_FILES) > 0) {
                 // Creates a new point for each row in the csv file
             ?>
         Sanitize.addPoint({
-
             <?php foreach ($data as $index => $content) { ?>
             <?php echo $sanitize->sanitizeString(strtolower($csvHeader[$index])) . ' : \'' .  $content .'\''; ?><?php if($index != ($chunk - 1)) echo ', '; ?>
             <?php } ?>

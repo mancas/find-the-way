@@ -48,10 +48,10 @@ if (count($_FILES) > 0) {
                     </div>
                     <span class="field-help">Sube tu fichero CSV con los datos que quieres mostrar en el mapa.</span>
                     <?php
-                        if ($error) {
+                        if (isset($error)) {
                     ?>
                         <div class="alert-error">
-                            <?php if(error == true) { ?>
+                            <?php if($error == true) { ?>
                             The file you uploaded is wrong or maybe it isn't a CSV file.
                             <?php } else {
                                 echo $error; }
