@@ -191,29 +191,44 @@ var UIManager = {
         MapManager.unobserve('isEditModeEnable', this.exitFindTheWayModeHandler);
     },
 
-    createFilters: function(filters) {
+    createFilters: function(filterObject) {
         var forEach = Array.prototype.forEach;
+        var postalCodeFilters = filterObject.getFiltersByType('postal-code');
+        var activityFilters = filterObject.getFiltersByType('activity');
 
-        forEach.call(filters, function(filter) {
-            var item = this.createFilterListItem(filter);
+        forEach.call(postalCodeFilters, function(filter) {
+            var item = this.createFilterListItem(filter, 'postal-code');
+            this.filtersContainer.appendChild(item);
+        }.bind(this));
+
+        forEach.call(activityFilters, function(filter) {
+            var item = this.createFilterListItem(filter, 'activity');
             this.filtersContainer.appendChild(item);
         }.bind(this));
 
         new Draggable(this.filters);
     },
 
-    createFilterListItem: function(filter) {
+    createFilterListItem: function(filter, type) {
         var checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
-        checkbox.value = filter;
-        checkbox.name = 'filter_' + filter;
-        checkbox.id = 'filter_' + filter;
+        checkbox.value = filter.value;
+        checkbox.name = 'filter_' + filter.value;
+        checkbox.id = 'filter_' + filter.value;
 
         var label = document.createElement('label');
-        label.textContent = filter;
+        label.textContent = filter.value;
         label.classList.add('filter');
-        label.setAttribute('for', 'filter_' + filter);
+        label.setAttribute('for', 'filter_' + filter.value);
 
+        switch (type) {
+            case 'activity':
+                var legend = document.createElement('img');
+                legend.src = filter.icon;
+                legend.classList.add('icon');
+                label.appendChild(legend);
+                break;
+        }
 
         var listItem = document.createElement('li');
         listItem.appendChild(checkbox);

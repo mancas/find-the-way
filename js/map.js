@@ -9,7 +9,7 @@ var MapManager = Observable.init({
     waypoints: [],
     waypointsLength: 0,
     markers: [],
-    filters: [],
+    filter: null,
     filtersApplied: [],
     MAX_WAYPOINTS: 8,
     directionsSteps: null,
@@ -39,8 +39,12 @@ var MapManager = Observable.init({
             mapOptions);
         this.setMarkers();
         this.directionsDisplay.setMap(this.map);
-        UIManager.createFilters(this.filters);
+        UIManager.createFilters(this.filter);
         this._bindEventsToFilters();
+    },
+
+    initFilter: function() {
+        this.filter = new Filter();
     },
 
     addPoint: function(point) {
@@ -49,9 +53,14 @@ var MapManager = Observable.init({
     },
 
     addFilter: function(point) {
-        var postalCode = parseInt(point.postal);
-        if (this.filters.indexOf(postalCode) == -1) {
-            this.filters.push(postalCode);
+        var postalCodeFilter = {type: 'postal-code', value: parseInt(point.postal)};
+        if (!this.filter.exists(postalCodeFilter)) {
+            this.filter.addFilter(postalCodeFilter);
+        }
+
+        var activityFilter ={type: 'activity', value: point.actividad};
+        if (!this.filter.exists(activityFilter)) {
+            this.filter.addFilter(activityFilter);
         }
     },
 
@@ -59,47 +68,44 @@ var MapManager = Observable.init({
         var forEach = Array.prototype.forEach;
         var self = this;
 
-        var nextChunk = function(iteration) {
-            var i = iteration;
-            var end = (iteration + self.chunk) > self.points.length ?
-                self.points.length : iteration + self.chunk;
-                console.info(end);
-            if (i == self.points.length) {
-                return;
-            }
-
-            for (i; i < end; i++) {
-                addMarker(self.points[i]);
-            }
-
-            setTimeout(function() {
-                nextChunk(i);
-            }, 5000);
-        }.bind(this);
-
         var addMarker = function(element) {
-            var address = self._generateAddress(element);
-            if (!address) {
-                return;
-            }
-
-            self.geocoder.geocode({'address': address}, function(results, status) {
-                if (status == google.maps.GeocoderStatus.OK) {
-                    var marker = new google.maps.Marker({
-                        map: self.map,
-                        position: results[0].geometry.location
-                    });
-                    marker.postalCode = parseInt(element.postal);
-                    self.markers.push(marker);
-                } else {
-                    console.warn('Revisar dirección: ' + element.orden + ' ' + status);
-                    self.wrongDirections.push(element);
-                    self.addWrongDirection(element, address);
+            // The filter is used to retrieve the icon
+            var filter = self.filter.getFilterIfExists(element.actividad);
+            if (element.latitude && element.longitude) {
+                var marker = new google.maps.Marker({
+                    map: self.map,
+                    position: new google.maps.LatLng(element.latitude, element.longitude),
+                    icon: filter.icon ? filter.icon : 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
+                });
+                marker.ftw_point = element;
+                self.markers.push(marker);
+            } else {
+                var address = self._generateAddress(element);
+                if (!address) {
+                    return;
                 }
-            });
+
+                self.geocoder.geocode({'address': address}, function(results, status) {
+                    if (status == google.maps.GeocoderStatus.OK) {
+                        var marker = new google.maps.Marker({
+                            map: self.map,
+                            position: results[0].geometry.location,
+                            icon: filter.icon ? filter.icon : 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
+                        });
+                        marker.ftw_point = element;
+                        self.markers.push(marker);
+                    } else {
+                        console.warn('Revisar dirección: ' + element.orden + ' ' + status);
+                        self.wrongDirections.push(element);
+                        self.addWrongDirection(element, address);
+                    }
+                });
+            }
         };
 
-        nextChunk(0);
+        forEach.call(self.points, function(element) {
+            addMarker(element);
+        });
     },
 
     _generateAddress: function(element) {

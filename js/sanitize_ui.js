@@ -81,7 +81,6 @@ var SanitizeUI = {
 
     addCSVLine: function(CSVLine) {
       var line = CSVLine + '\n';
-        console.info(this.CSVFile.textContent);
       this.CSVFile.textContent = this.CSVFile.textContent + line;
     }
 };

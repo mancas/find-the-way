@@ -327,22 +327,25 @@ if (count($_FILES) > 0) {
         <div id="step-list"></div>
     </div>
 
-    <script type="text/javascript" src="js/ui.js"> </script>
-    <script type="text/javascript" src="js/observable.js"> </script>
-    <script type="text/javascript" src="js/draggable.js"> </script>
+    <script type="text/javascript" src="js/ui.js"></script>
+    <script type="text/javascript" src="js/observable.js"></script>
+    <script type="text/javascript" src="js/draggable.js"></script>
 
     <?php if(isset($filename)) { ?>
     <script type="text/javascript"
             src="http://maps.googleapis.com/maps/api/js?sensor=false">
     </script>
-    <script type="text/javascript" src="js/modal.js"> </script>
-    <script type="text/javascript" src="js/tutorial.js"> </script>
-    <script type="text/javascript" src="js/map.js"> </script>
+    <script type="text/javascript" src="js/modal.js"></script>
+    <script type="text/javascript" src="js/filter.js"></script>
+    <script type="text/javascript" src="js/tutorial.js"></script>
+    <script type="text/javascript" src="js/map.js"></script>
     <?php } ?>
 
     <script type="text/javascript">
         UIManager.init();
-        <?php if (isset($filename)) {
+        <?php if (isset($filename)) { ?>
+        MapManager.initFilter();
+        <?php
             $file = fopen($filename, 'r');
             $line = 1;
             $csvHeader = array();
@@ -359,7 +362,6 @@ if (count($_FILES) > 0) {
                 // Creates a new point for each row in the csv file
             ?>
         MapManager.addPoint({
-
             <?php foreach ($data as $index => $content) { ?>
             <?php echo strtolower($csvHeader[$index]) . ' : \'' .  $content .'\''; ?><?php if($index != ($chunk - 1)) echo ', '; ?>
             <?php } ?>
