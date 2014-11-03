@@ -55,7 +55,6 @@ var UIManager = {
             var file = evt.target.value;
 
             if (file.length == 0) {
-                console.info(file);
                 this.fakeInput.setAttribute('value', this.fakeInput.dataset.placeholder);
                 this.uploadBtn.addEventListener('click', openDialog);
                 this.uploadBtn.removeEventListener('click', submitForm);
@@ -176,7 +175,6 @@ var UIManager = {
         }
         cancelButton.addEventListener('click', MapManager.exitFindTheWayMode.bind(MapManager));
         MapManager.observe('waypointsLength', function(value) {
-            console.info(value);
             if (value > 0) {
                 button.disabled = false;
             } else {
@@ -197,31 +195,31 @@ var UIManager = {
         var activityFilters = filterObject.getFiltersByType('activity');
 
         forEach.call(postalCodeFilters, function(filter) {
-            var item = this.createFilterListItem(filter, 'postal-code');
+            var item = this.createFilterListItem(filter);
             this.filtersContainer.appendChild(item);
         }.bind(this));
 
         forEach.call(activityFilters, function(filter) {
-            var item = this.createFilterListItem(filter, 'activity');
+            var item = this.createFilterListItem(filter);
             this.filtersContainer.appendChild(item);
         }.bind(this));
 
         new Draggable(this.filters);
     },
 
-    createFilterListItem: function(filter, type) {
+    createFilterListItem: function(filter) {
         var checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.value = filter.value;
         checkbox.name = 'filter_' + filter.value;
         checkbox.id = 'filter_' + filter.value;
+        checkbox.dataset.type = filter.type;
 
         var label = document.createElement('label');
-        label.textContent = filter.value;
         label.classList.add('filter');
         label.setAttribute('for', 'filter_' + filter.value);
 
-        switch (type) {
+        switch (filter.type) {
             case 'activity':
                 var legend = document.createElement('img');
                 legend.src = filter.icon;
@@ -229,6 +227,7 @@ var UIManager = {
                 label.appendChild(legend);
                 break;
         }
+        label.innerHTML = label.innerHTML + filter.value;
 
         var listItem = document.createElement('li');
         listItem.appendChild(checkbox);

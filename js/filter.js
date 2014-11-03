@@ -64,7 +64,7 @@ Filter.prototype.removeFilter = function(filter) {
 
 Filter.prototype.exists = function(filter) {
     var exists = this.some.call(this._filters, function(element) {
-        if (filter.value === element.value) {
+        if (filter.value == element.value) {
             return true;
         }
 
@@ -77,8 +77,7 @@ Filter.prototype.exists = function(filter) {
 Filter.prototype.getFilterIfExists = function(value) {
     var found;
     this.forEach.call(this._filters, function(filter) {
-        console.info(value === filter.value, filter);
-        if (value === filter.value) {
+        if (value == filter.value) {
             found = filter;
             return;
         }
@@ -100,7 +99,7 @@ Filter.prototype.activeFilters = function() {
 
 Filter.prototype.toggleFilter = function(value) {
     this.some.call(this._filters, function(filter) {
-        if (value === filter.value) {
+        if (value == filter.value) {
             filter.active = !filter.active;
             return true;
         }
@@ -109,10 +108,28 @@ Filter.prototype.toggleFilter = function(value) {
     }.bind(this));
 }
 
+Filter.prototype.shouldApplyFilter = function(marker, value) {
+    var shouldApplyFilter = false;
+    this.forEach.call(this.activeFilters(), function(filter) {
+        if (filter.value == value) {
+            switch (filter.type) {
+                case 'activity':
+                    shouldApplyFilter = marker.ftw_point.actividad == value;
+                    break;
+                case 'postal-code':
+                    shouldApplyFilter = marker.ftw_point.postal == value;
+                    break;
+            }
+        }
+    });
+
+    return shouldApplyFilter;
+}
+
 Filter.prototype.getFiltersByType = function(type) {
     var filters = [];
     this.forEach.call(this._filters, function(filter) {
-        if (filter.type === type) {
+        if (filter.type == type) {
             filters.push(filter);
         }
     }.bind(this));

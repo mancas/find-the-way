@@ -269,15 +269,16 @@ var MapManager = Observable.init({
     applyFilter: function(evt) {
         var checkbox = evt.target;
         var forEach = Array.prototype.forEach;
-        var postalCode = parseInt(checkbox.value);
-        if (checkbox.checked) {
-            this.filtersApplied.push(postalCode);
-        } else {
-            var indexToRemove = this.filtersApplied.indexOf(postalCode);
-            this.filtersApplied.splice(indexToRemove, 1);
-        }
+
+        this.filter.toggleFilter(checkbox.value);
         forEach.call(this.markers, function(marker) {
+            var shouldApply = this.filter.shouldApplyFilter(marker, checkbox.value);
             if (checkbox.checked) {
+                marker.setVisible(shouldApply);
+            } else {
+                marker.setVisible(!shouldApply);
+            }
+            /*if (checkbox.checked) {
                 if (marker.postalCode != postalCode &&
                     this.filtersApplied.indexOf(marker.postalCode) == -1) {
                     marker.setVisible(false);
@@ -291,7 +292,7 @@ var MapManager = Observable.init({
                 } else {
                     marker.setVisible(false);
                 }
-            }
+            }*/
         }.bind(this));
     }
 });
