@@ -24,10 +24,14 @@ var Filter = function() {
     this.useLabels = false;
     this.labelCount = 0;
     this._availableColors = this.colors;
+    this.filterTypes = [
+        'postal-code',
+        'activity'
+    ];
 }
 
 Filter.prototype.getFilters = function() {
-   return this._filters;
+    return this._filters;
 }
 
 Filter.prototype.addFilter = function(filter) {
@@ -75,13 +79,13 @@ Filter.prototype.exists = function(filter) {
 }
 
 Filter.prototype.getFilterIfExists = function(value) {
-    var found;
+    var found = null;
     this.forEach.call(this._filters, function(filter) {
         if (value == filter.value) {
             found = filter;
             return;
         }
-    }.bind(this));
+    });
 
     return found;
 }
@@ -92,7 +96,7 @@ Filter.prototype.activeFilters = function() {
         if (filter.active) {
             filters.push(filter);
         }
-    }.bind(this));
+    });
 
     return filters;
 }
@@ -105,23 +109,49 @@ Filter.prototype.toggleFilter = function(value) {
         }
 
         return false;
-    }.bind(this));
+    });
 }
 
-Filter.prototype.shouldApplyFilter = function(marker, value) {
-    var shouldApplyFilter = false;
-    this.forEach.call(this.activeFilters(), function(filter) {
+Filter.prototype.applyFilter = function(markers, value, filters) {
+    var toApply = markers.slice();
+    var self = this;
+    if (filters.length == 0) {
+        this.forEach.call(toApply, function(marker) {
+            marker.setVisible(true);
+        });
+
+        return toApply;
+    }
+
+    this.forEach.call(filters, function(filter, index) {
         if (filter.value == value) {
-            switch (filter.type) {
-                case 'activity':
-                    shouldApplyFilter = marker.ftw_point.actividad == value;
-                    break;
-                case 'postal-code':
-                    shouldApplyFilter = marker.ftw_point.postal == value;
-                    break;
-            }
+            self.forEach.call(toApply, function(marker, index) {
+                if (!self.shouldApplyFilter(marker, filter)) {
+                    //Need to check if should be visible
+                    toApply.splice(index, 1);
+                    marker.setVisible(false);
+                } else {
+                    console.info(marker);
+                    marker.setVisible(true);
+                }
+           })
         }
     });
+
+    return toApply;
+}
+
+Filter.prototype.shouldApplyFilter = function(marker, filter) {
+    var shouldApplyFilter = false;
+    switch (filter.type) {
+        case 'activity':
+            shouldApplyFilter = marker.ftw_point.actividad == filter.value;
+            break;
+        case 'postal-code':
+            console.info(marker.ftw_point.postal == filter.value);
+            shouldApplyFilter = marker.ftw_point.postal == filter.value;
+            break;
+    }
 
     return shouldApplyFilter;
 }
@@ -132,7 +162,18 @@ Filter.prototype.getFiltersByType = function(type) {
         if (filter.type == type) {
             filters.push(filter);
         }
-    }.bind(this));
+    });
+
+    return filters;
+}
+
+Filter.prototype.getActiveFiltersByType = function(type) {
+    var filters = [];
+    this.forEach.call(this._filters, function(filter) {
+        if (filter.type == type && filter.active) {
+            filters.push(filter);
+        }
+    });
 
     return filters;
 }

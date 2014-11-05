@@ -12,6 +12,7 @@ var UIManager = {
     exitFindTheWayModeHandler: null,
     filters: null,
     filtersContainer: null,
+    markerInfoContainer: null,
 
     init: function() {
         this.inputs = document.querySelectorAll('input');
@@ -24,6 +25,7 @@ var UIManager = {
         this.help = document.querySelector('#app-header .help');
         this.filters = document.querySelector('#filters');
         this.filtersContainer = document.querySelector('#filters ul.filters-container');
+        this.markerInfoContainer = document.querySelector('#marker-info-container');
         this.exitFindTheWayModeHandler = this.exitFindTheWayModeListener.bind(this);
         this._setPlaceholders();
         this.bindEvents();

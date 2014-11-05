@@ -271,13 +271,11 @@ var MapManager = Observable.init({
         var forEach = Array.prototype.forEach;
 
         this.filter.toggleFilter(checkbox.value);
-        forEach.call(this.markers, function(marker) {
-            var shouldApply = this.filter.shouldApplyFilter(marker, checkbox.value);
-            if (checkbox.checked) {
-                marker.setVisible(shouldApply);
-            } else {
-                marker.setVisible(!shouldApply);
-            }
+        var markers = this.markers.slice();
+
+        forEach.call(this.filter.filterTypes, function(type) {
+            var filters = this.filter.getActiveFiltersByType(type);
+            markers = this.filter.applyFilter(markers, checkbox.value, filters);
             /*if (checkbox.checked) {
                 if (marker.postalCode != postalCode &&
                     this.filtersApplied.indexOf(marker.postalCode) == -1) {

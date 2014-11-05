@@ -327,6 +327,16 @@ if (count($_FILES) > 0) {
         <div id="step-list"></div>
     </div>
 
+    <div id="marker-info" data-visible="false">
+        <div id="header">
+            <div class="circle circle-blue">
+                <span class="icon">!</span>
+            </div>
+            <span class="title">Información</span>
+        </div>
+        <div id="marker-info-container"></div>
+    </div>
+
     <script type="text/javascript" src="js/ui.js"></script>
     <script type="text/javascript" src="js/observable.js"></script>
     <script type="text/javascript" src="js/draggable.js"></script>
