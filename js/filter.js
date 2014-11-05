@@ -90,7 +90,7 @@ Filter.prototype.getFilterIfExists = function(value) {
     return found;
 }
 
-Filter.prototype.activeFilters = function() {
+Filter.prototype.getActiveFilters = function() {
     var filters = [];
     this.forEach.call(this._filters, function(filter) {
         if (filter.active) {
@@ -112,48 +112,46 @@ Filter.prototype.toggleFilter = function(value) {
     });
 }
 
-Filter.prototype.applyFilter = function(markers, value, filters) {
-    var toApply = markers.slice();
+Filter.prototype.applyFilters = function(markers) {
     var self = this;
-    if (filters.length == 0) {
-        this.forEach.call(toApply, function(marker) {
+    if (this.getActiveFilters().length == 0) {
+        this.forEach.call(markers, function(marker) {
             marker.setVisible(true);
         });
 
-        return toApply;
+        return;
     }
 
-    this.forEach.call(filters, function(filter, index) {
-        if (filter.value == value) {
-            self.forEach.call(toApply, function(marker, index) {
-                if (!self.shouldApplyFilter(marker, filter)) {
-                    //Need to check if should be visible
-                    toApply.splice(index, 1);
-                    marker.setVisible(false);
-                } else {
-                    console.info(marker);
-                    marker.setVisible(true);
-                }
-           })
+    this.forEach.call(markers, function(marker) {
+        var visible = true;
+        self.forEach.call(self.filterTypes, function(type) {
+            var filters = self.getActiveFiltersByType(type);
+            visible = visible && self.shouldApplySomeFilter(marker, filters);
+        });
+        if (!visible) {
+            marker.setVisible(false);
+        } else {
+            marker.setVisible(true);
+        }
+   });
+}
+
+Filter.prototype.shouldApplySomeFilter = function(marker, filters) {
+    // If there is no filters of a specific type then the marker could be visible
+    if (filters.length == 0) {
+        return true;
+    }
+
+    var shouldApplySomeFilter = this.some.call(filters, function(filter) {
+        switch (filter.type) {
+            case 'activity':
+                return marker.ftw_point.actividad == filter.value;
+            case 'postal-code':
+                return marker.ftw_point.postal == filter.value;
         }
     });
 
-    return toApply;
-}
-
-Filter.prototype.shouldApplyFilter = function(marker, filter) {
-    var shouldApplyFilter = false;
-    switch (filter.type) {
-        case 'activity':
-            shouldApplyFilter = marker.ftw_point.actividad == filter.value;
-            break;
-        case 'postal-code':
-            console.info(marker.ftw_point.postal == filter.value);
-            shouldApplyFilter = marker.ftw_point.postal == filter.value;
-            break;
-    }
-
-    return shouldApplyFilter;
+    return shouldApplySomeFilter;
 }
 
 Filter.prototype.getFiltersByType = function(type) {

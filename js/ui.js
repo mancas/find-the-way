@@ -193,17 +193,18 @@ var UIManager = {
 
     createFilters: function(filterObject) {
         var forEach = Array.prototype.forEach;
-        var postalCodeFilters = filterObject.getFiltersByType('postal-code');
-        var activityFilters = filterObject.getFiltersByType('activity');
+        var self = this;
+        var filtersByType;
 
-        forEach.call(postalCodeFilters, function(filter) {
-            var item = this.createFilterListItem(filter);
-            this.filtersContainer.appendChild(item);
-        }.bind(this));
+        console.info(filterObject.getFiltersByType('postal-code'));
 
-        forEach.call(activityFilters, function(filter) {
-            var item = this.createFilterListItem(filter);
-            this.filtersContainer.appendChild(item);
+        forEach.call(filterObject.filterTypes, function(type) {
+            filtersByType = filterObject.getActiveFiltersByType(type);
+            console.info(filtersByType, typeof filterObject.getFiltersByType(type), type);
+            forEach.call(filtersByType, function(filter) {
+                var item = self.createFilterListItem(filter);
+                self.filtersContainer.appendChild(item);
+            });
         }.bind(this));
 
         new Draggable(this.filters);

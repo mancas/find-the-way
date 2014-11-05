@@ -262,35 +262,14 @@ var MapManager = Observable.init({
         var filters = UIManager.filtersContainer.querySelectorAll('input');
 
         forEach.call(filters, function(filter) {
-            filter.addEventListener('change', this.applyFilter.bind(this));
+            filter.addEventListener('change', this.applyFilters.bind(this));
         }.bind(this));
     },
 
-    applyFilter: function(evt) {
+    applyFilters: function(evt) {
         var checkbox = evt.target;
-        var forEach = Array.prototype.forEach;
 
         this.filter.toggleFilter(checkbox.value);
-        var markers = this.markers.slice();
-
-        forEach.call(this.filter.filterTypes, function(type) {
-            var filters = this.filter.getActiveFiltersByType(type);
-            markers = this.filter.applyFilter(markers, checkbox.value, filters);
-            /*if (checkbox.checked) {
-                if (marker.postalCode != postalCode &&
-                    this.filtersApplied.indexOf(marker.postalCode) == -1) {
-                    marker.setVisible(false);
-                } else {
-                    marker.setVisible(true);
-                }
-            } else {
-                if ((this.filtersApplied.length == 0) ||
-                    this.filtersApplied.indexOf(marker.postalCode) != -1) {
-                    marker.setVisible(true);
-                } else {
-                    marker.setVisible(false);
-                }
-            }*/
-        }.bind(this));
+        this.filter.applyFilters(this.markers);
     }
 });
