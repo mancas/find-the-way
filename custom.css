@@ -659,6 +659,38 @@ input {
     cursor: pointer;
 }
 
+.filters-container .filter-header {
+    font-weight: bold;
+    border-bottom: solid 1px #5B6064;
+}
+
+/** MARKER INFO **/
+
+#marker-info {
+    height: 100%;
+    max-height: calc(100% - 120px);
+    overflow: scroll;
+    transition: all ease 0.25s;
+    -webkit-transition: all ease 0.25s;
+    -moz-transition: all ease 0.25s;
+}
+
+#marker-info .marker-info-container {
+    overflow: scroll;
+}
+
+#marker-info .marker-info-container li {
+    margin-bottom: 15px;
+}
+
+#marker-info .marker-info-container li:last-child {
+    margin-bottom: 0;
+}
+
+#marker-info .marker-info-container li b {
+    text-transform: capitalize;
+}
+
 /** SANITIZE **/
 
 .loading-overlay {

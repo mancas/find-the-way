@@ -327,14 +327,26 @@ if (count($_FILES) > 0) {
         <div id="step-list"></div>
     </div>
 
-    <div id="marker-info" data-visible="false">
-        <div id="header">
-            <div class="circle circle-blue">
-                <span class="icon">!</span>
-            </div>
-            <span class="title">Información</span>
+    <div id="marker-info" class="modal-dialog modal-dialog-xs" data-visible="false">
+        <div class="dismiss-container">
+            <a class="modal-dialog-dismiss" href="">&times;</a>
         </div>
-        <div id="marker-info-container"></div>
+
+        <div data-visible="false" class="caret-shadow caret-shadow-top"></div>
+        <div data-visible="false" class="caret caret-top"></div>
+
+        <div class="modal-content">
+            <div class="dialog-header">
+                <div class="circle circle-blue">
+                    <span class="icon">!</span>
+                </div>
+                <span class="step-title">Información</span>
+            </div>
+            <div class="dialog-content">
+                <ul class="marker-info-container">
+                </ul>
+            </div>
+        </div>
     </div>
 
     <script type="text/javascript" src="js/ui.js"></script>

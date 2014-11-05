@@ -79,6 +79,10 @@ var MapManager = Observable.init({
                 });
                 marker.ftw_point = element;
                 self.markers.push(marker);
+                // When the user click a marker the information will be displayed
+                google.maps.event.addListener(marker, 'click', function() {
+                    self.setMarkerInformation(marker);
+                });
             } else {
                 var address = self._generateAddress(element);
                 if (!address) {
@@ -94,6 +98,10 @@ var MapManager = Observable.init({
                         });
                         marker.ftw_point = element;
                         self.markers.push(marker);
+                        // When the user click a marker the information will be displayed
+                        google.maps.event.addListener(marker, 'click', function() {
+                            self.setMarkerInformation(marker);
+                        });
                     } else {
                         console.warn('Revisar dirección: ' + element.orden + ' ' + status);
                         self.wrongDirections.push(element);
@@ -271,5 +279,21 @@ var MapManager = Observable.init({
 
         this.filter.toggleFilter(checkbox.value);
         this.filter.applyFilters(this.markers);
+    },
+
+    setMarkerInformation: function(marker) {
+        // Escape if we are in the edit mode
+        if (this.isEditModeEnable) {
+            return;
+        }
+
+        var point = marker.ftw_point;
+        UIManager.cleanMarkerInformation();
+
+        for (var key in point) {
+            UIManager.addItemToMarkerInformation(key, point[key]);
+        }
+
+        UIManager.openInformationModal();
     }
 });

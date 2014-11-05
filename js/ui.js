@@ -13,6 +13,7 @@ var UIManager = {
     filters: null,
     filtersContainer: null,
     markerInfoContainer: null,
+    markerInfoModal: null,
 
     init: function() {
         this.inputs = document.querySelectorAll('input');
@@ -25,7 +26,8 @@ var UIManager = {
         this.help = document.querySelector('#app-header .help');
         this.filters = document.querySelector('#filters');
         this.filtersContainer = document.querySelector('#filters ul.filters-container');
-        this.markerInfoContainer = document.querySelector('#marker-info-container');
+        this.markerInfoModal = document.querySelector('#marker-info');
+        this.markerInfoContainer = document.querySelector('.marker-info-container');
         this.exitFindTheWayModeHandler = this.exitFindTheWayModeListener.bind(this);
         this._setPlaceholders();
         this.bindEvents();
@@ -194,18 +196,16 @@ var UIManager = {
     createFilters: function(filterObject) {
         var forEach = Array.prototype.forEach;
         var self = this;
-        var filtersByType;
-
-        console.info(filterObject.getFiltersByType('postal-code'));
 
         forEach.call(filterObject.filterTypes, function(type) {
-            filtersByType = filterObject.getActiveFiltersByType(type);
-            console.info(filtersByType, typeof filterObject.getFiltersByType(type), type);
-            forEach.call(filtersByType, function(filter) {
+            var filters = filterObject.getFiltersByType(type);
+            var filterHeader = self.createFilterTypeHeader(type);
+            self.filtersContainer.appendChild(filterHeader);
+            forEach.call(filters, function(filter) {
                 var item = self.createFilterListItem(filter);
                 self.filtersContainer.appendChild(item);
             });
-        }.bind(this));
+        });
 
         new Draggable(this.filters);
     },
@@ -239,11 +239,42 @@ var UIManager = {
         return listItem;
     },
 
+    createFilterTypeHeader: function(type) {
+        var filterHeader = document.createElement('li');
+        filterHeader.classList.add('filter-header');
+        switch (type) {
+            case 'activity':
+                filterHeader.textContent = 'Actividad';
+                break;
+            case 'postal-code':
+                filterHeader.textContent = 'Código postal';
+                break;
+        }
+
+        return filterHeader;
+    },
+
     toggleFilters: function() {
         if (this.filters.dataset.visible == 'true') {
             this.filters.dataset.visible = false;
         } else {
             Modal.openModal(this.filters, document.body, 'custom', 40, 60);
         }
+    },
+
+    getMarkerInfoView: function(header, content) {
+        return '<li><b>' + header + ':</b> '+ content +'</li>';
+    },
+
+    addItemToMarkerInformation: function(header, content) {
+        this.markerInfoContainer.innerHTML += this.getMarkerInfoView(header, content);
+    },
+
+    cleanMarkerInformation: function() {
+        this.markerInfoContainer.innerHTML = '';
+    },
+
+    openInformationModal: function() {
+        Modal.openModal(this.markerInfoModal, document.body, 'custom', 40, 60);
     }
 };
