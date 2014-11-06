@@ -36,7 +36,7 @@ var Modal = {
                 }
                 //Left position
                 if ((clientX - (element.clientWidth + this.caretOffset)) > 0) {
-                    if (clientX == 0) {
+                    if (clientY == 0) {
                         element.style.top = this.verticalOffset + 'px';
                     } else {
                         element.style.top = clientY + 'px';
@@ -48,28 +48,28 @@ var Modal = {
                 //Right position
                 if ((window.innerWidth - (clientX + boundingClientRect.width +
                     element.clientWidth + this.caretOffset)) > 0) {
-                    if (clientX == 0) {
+                    if (clientY == 0) {
                         element.style.top = this.verticalOffset + 'px';
                     } else {
-                        element.style.top = clientX + 'px';
+                        element.style.top = clientY + 'px';
                     }
                     element.style.left = (clientX + boundingClientRect.width + this.caretOffset) + 'px';
                     position = 'right';
                     break;
                 }
             case 'left':
-                if (clientX == 0) {
+                if (clientY == 0) {
                     element.style.top = this.verticalOffset + 'px';
                 } else {
-                    element.style.top = clientX + 'px';
+                    element.style.top = clientY + 'px';
                 }
                 element.style.left = (clientX - element.clientWidth + this.caretOffset) + 'px';
                 break;
             case 'right':
-                if (clientX == 0) {
+                if (clientY == 0) {
                     element.style.top = this.verticalOffset + 'px';
                 } else {
-                    element.style.top = clientX + 'px';
+                    element.style.top = clientY + 'px';
                 }
                 element.style.left = (clientX + boundingClientRect.width + this.caretOffset) + 'px';
                 break;

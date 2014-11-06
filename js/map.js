@@ -173,7 +173,7 @@ var MapManager = Observable.init({
     toggleEditMode: function() {
         this.isEditModeEnable = !this.isEditModeEnable;
         if (!this.isEditModeEnable) {
-            this._unbindEventsMarkers();
+            this._restoreEventsMarkers();
         } else {
             this._bindEventsMarkers();
         }
@@ -196,11 +196,15 @@ var MapManager = Observable.init({
         }.bind(this));
     },
 
-    _unbindEventsMarkers: function() {
+    _restoreEventsMarkers: function() {
         var forEach = Array.prototype.forEach;
         forEach.call(this.markers, function(marker) {
             marker.setAnimation(null);
             google.maps.event.clearListeners(marker, 'click');
+            // Restore the previous behavior
+            google.maps.event.addListener(marker, 'click', function() {
+                this.setMarkerInformation(marker);
+            }.bind(this));
         }.bind(this));
     },
 

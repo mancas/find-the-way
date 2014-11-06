@@ -26,7 +26,19 @@ var Tutorial = {
             element: '#route-steps',
             paginator: true
         },
-        5: {
+        5 : {
+            hash: '#step5',
+            element: 'body',
+            position: 'center',
+            paginator: true
+        },
+        6 : {
+            hash: '#step6',
+            element: '#marker-info',
+            position: 'right',
+            paginator: true
+        },
+        7: {
             hash: '#final-step',
             position: 'center',
             element: 'body'
@@ -46,7 +58,7 @@ var Tutorial = {
     moveToLeftHandler: null,
     moveToRightHandler: null,
     TUTORIAL_WAYPOINTS: 1,
-    TUTORIAL_KEY: 'ls_tutorial',
+    TUTORIAL_KEY: 'ls_tutorial_v1',
 
     _init: function() {
         this.panel = document.querySelector('#tutorial');
@@ -78,6 +90,9 @@ var Tutorial = {
     _bindEventToTakeATourBtn: function() {
         this.takeATourBtn.addEventListener('click', function() {
             this.isRunning = true;
+            if (MapManager.isEditModeEnable) {
+                MapManager.toggleEditMode();
+            }
             this.handleStep();
         }.bind(this));
     },
@@ -120,7 +135,13 @@ var Tutorial = {
             case 4:
                 this._bindEventsToClearBtn();
                 break;
-            case 5: 
+            case 5:
+                this._bindEventsToMarkers();
+                break;
+            case 6:
+                this._bindEventsToCloseMarkerInfo();
+                break;
+            case 7:
                 localStorage.setItem(this.TUTORIAL_KEY, true);
                 this.isRunning = false;
                 break;
@@ -191,6 +212,29 @@ var Tutorial = {
         var btn = document.querySelector('button#clear-route');
         if (btn)
             btn.removeEventListener('click', this.handleStepListener);
+    },
+
+    _bindEventsToMarkers: function() {
+        var forEach = Array.prototype.forEach;
+        var self = this;
+
+        forEach.call(MapManager.markers, function(marker) {
+            google.maps.event.addListenerOnce(marker, 'click', function() {
+                if (!self.isRunning) {
+                    return;
+                }
+                self.handleStep();
+            });
+        })
+    },
+
+    _bindEventsToCloseMarkerInfo: function() {
+        var dismiss = document.querySelector('#marker-info .modal-dialog-dismiss');
+        var self = this;
+        dismiss.addEventListener('click', function onClick() {
+            dismiss.removeEventListener('click', onClick);
+            self.handleStep();
+        });
     },
 
     updateCurrentStep: function() {

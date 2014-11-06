@@ -667,16 +667,16 @@ input {
 /** MARKER INFO **/
 
 #marker-info {
-    height: 100%;
     max-height: calc(100% - 120px);
-    overflow: scroll;
+    overflow-y: auto;
+    overflow-x: hidden;
     transition: all ease 0.25s;
     -webkit-transition: all ease 0.25s;
     -moz-transition: all ease 0.25s;
-}
-
-#marker-info .marker-info-container {
-    overflow: scroll;
+    position: absolute;
+    top: 60px;
+    left: 40px;
+    width: 400px;
 }
 
 #marker-info .marker-info-container li {

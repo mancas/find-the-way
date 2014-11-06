@@ -291,6 +291,48 @@ if (count($_FILES) > 0) {
             </div>
         </div>
 
+        <!-- STEP 5 -->
+        <div id="step5" class="modal-content" data-current="false">
+            <div class="dialog-header">
+                <div class="circle circle-blue">
+                    <span class="icon">!</span>
+                </div>
+                <span class="step-title">Marcadores</span>
+            </div>
+            <div class="dialog-content">
+                <p>
+                    Si haces click en los marcadores se mostrará la información referente a dicho marcador.
+                </p>
+
+                <br>
+
+                <p>
+                    <b>Siguiente paso:</b> Haz click en un marcador para ver su información.
+                </p>
+            </div>
+        </div>
+
+        <!-- STEP 6 -->
+        <div id="step6" class="modal-content" data-current="false">
+            <div class="dialog-header">
+                <div class="circle circle-yellow">
+                    <span class="icon">!</span>
+                </div>
+                <span class="step-title">Información del marcador</span>
+            </div>
+            <div class="dialog-content">
+                <p>
+                    Aquí encontrarás la información contenida en el marcador que selecciones. Además puedes aplicar filtros que encontrarás en el menú de la aplicación.
+                </p>
+
+                <br>
+
+                <p>
+                    <b>Siguiente paso:</b> Cierra la información del marcador para continuar.
+                </p>
+            </div>
+        </div>
+
         <!-- FINAL STEP -->
         <div id="final-step" class="modal-content" data-current="false">
             <div class="dialog-content text-center">
@@ -313,6 +355,8 @@ if (count($_FILES) > 0) {
                 <li><a data-page="2" href=""></a></li>
                 <li><a data-page="3" href=""></a></li>
                 <li><a data-page="4" href=""></a></li>
+                <li><a data-page="5" href=""></a></li>
+                <li><a data-page="6" href=""></a></li>
             </ul>
         </div>
     </div>
@@ -327,7 +371,7 @@ if (count($_FILES) > 0) {
         <div id="step-list"></div>
     </div>
 
-    <div id="marker-info" class="modal-dialog modal-dialog-xs" data-visible="false">
+    <div id="marker-info" class="modal-dialog" data-visible="false">
         <div class="dismiss-container">
             <a class="modal-dialog-dismiss" href="">&times;</a>
         </div>
