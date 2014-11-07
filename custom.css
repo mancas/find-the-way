@@ -78,6 +78,10 @@ a:active, a:focus, a:visited, a:link {
     padding: 2px 8px;
 }
 
+.btn-large {
+    padding: 5px 50px;
+}
+
 .dragging {
     transition: none !important;
     -webkit-transition: none !important;
@@ -96,6 +100,10 @@ a:active, a:focus, a:visited, a:link {
     display: table-cell;
     vertical-align: middle;
     color: #5B6064;
+}
+
+.m-auto {
+    margin: auto;
 }
 
 /** MAIN CONTENT **/

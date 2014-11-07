@@ -103,11 +103,19 @@ var Modal = {
         element.dataset.visible = true;
     },
 
+    hide: function(element) {
+        element.dataset.visible = false;
+    },
+
     configDismiss: function(element) {
-        var dismissBtn = element.querySelector('.modal-dialog-dismiss');
-        dismissBtn.addEventListener('click', function(evt) {
-            evt.preventDefault();
-            element.dataset.visible = false;
+        var dismissButtons = element.querySelectorAll('.modal-dialog-dismiss');
+        var forEach = Array.prototype.forEach;
+        var self = this;
+        forEach.call(dismissButtons, function(btn) {
+            btn.addEventListener('click', function(evt) {
+                evt.preventDefault();
+                self.hide(element);
+            });
         });
     },
 

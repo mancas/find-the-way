@@ -11,12 +11,13 @@ var MapManager = Observable.init({
     markers: [],
     filter: null,
     filtersApplied: [],
-    MAX_WAYPOINTS: 8,
+    MAX_WAYPOINTS: 1,
     directionsSteps: null,
     wrongDirections: [],
     wrongDirectionsContainer: null,
     wrongDirectionsModalEnabled: false,
     chunk: 5,
+    waypointsWarning: null,
 
     init: function() {
         this.directionsSteps = document.querySelector('#route-steps');
@@ -41,6 +42,12 @@ var MapManager = Observable.init({
         this.directionsDisplay.setMap(this.map);
         UIManager.createFilters(this.filter);
         this._bindEventsToFilters();
+        this._createHomeMarker();
+        this.waypointsWarning = new WarningDialog({
+            selector: '#waypoints-warning',
+            position: 'center',
+            draggable: true
+        })
     },
 
     initFilter: function() {
@@ -170,6 +177,13 @@ var MapManager = Observable.init({
         tbody.appendChild(tr);
     },
 
+    _createHomeMarker: function() {
+        new google.maps.Marker({
+            map: this.map,
+            position: this.home
+        });
+    },
+
     toggleEditMode: function() {
         this.isEditModeEnable = !this.isEditModeEnable;
         if (!this.isEditModeEnable) {
@@ -217,10 +231,13 @@ var MapManager = Observable.init({
               this.waypointsLength = this.waypoints.length;
           }
       } else {
-          if (this.waypoints.length < this.MAX_WAYPOINTS) {
+          if ((this.waypoints.length + 1) <= this.MAX_WAYPOINTS) {
               marker.setAnimation(google.maps.Animation.BOUNCE);
               this.waypoints.push(marker);
               this.waypointsLength = this.waypoints.length;
+          } else {
+              if (!this.waypointsWarning.visible)
+                this.waypointsWarning.show();
           }
       }
     },

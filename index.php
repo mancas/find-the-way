@@ -393,6 +393,40 @@ if (count($_FILES) > 0) {
         </div>
     </div>
 
+    <div id="waypoints-warning" class="modal-dialog" data-visible="false">
+        <div class="dismiss-container">
+            <a class="modal-dialog-dismiss" href="">&times;</a>
+        </div>
+
+        <div data-visible="false" class="caret-shadow caret-shadow-top"></div>
+        <div data-visible="false" class="caret caret-top"></div>
+
+        <div class="modal-content">
+            <div class="dialog-header">
+                <div class="circle circle-red">
+                    <span class="icon">!</span>
+                </div>
+                <span class="step-title">Aviso</span>
+            </div>
+            <div class="dialog-content">
+                <p>
+                    Has alcanzado el número máximo de waypoints.
+                </p>
+
+                <br>
+
+                <p>
+                    La cuenta gratuita de Google Maps admite hasta <b>8 waypoints</b> en cada ruta. Sin embargo,
+                    siempre puedes adaptar la ruta a tus necesidades arrastrandola.
+                </p>
+
+                <div class="text-center">
+                    <span class="btn btn-large modal-dialog-dismiss">Aceptar</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script type="text/javascript" src="js/ui.js"></script>
     <script type="text/javascript" src="js/observable.js"></script>
     <script type="text/javascript" src="js/draggable.js"></script>
@@ -404,6 +438,7 @@ if (count($_FILES) > 0) {
     <script type="text/javascript" src="js/modal.js"></script>
     <script type="text/javascript" src="js/filter.js"></script>
     <script type="text/javascript" src="js/tutorial.js"></script>
+    <script type="text/javascript" src="js/warning_dialog.js"></script>
     <script type="text/javascript" src="js/map.js"></script>
     <?php } ?>
 

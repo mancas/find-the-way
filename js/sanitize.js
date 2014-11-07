@@ -134,14 +134,14 @@ var Sanitize = {
             }
         }
         SanitizeUI.addCSVLine(header);
-
+console.info('here');
         forEach.call(this.points, function(line) {
             var csvLine = '';
 
             for (var key in line) {
                 var column = line[key];
                 csvLine += column;
-                if (keys.indexOf(column) != (keys.length - 1)) {
+                if (keys.indexOf(key) != (keys.length - 1)) {
                     csvLine += ';';
                 }
             }
