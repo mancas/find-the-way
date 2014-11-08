@@ -134,7 +134,7 @@ var Sanitize = {
             }
         }
         SanitizeUI.addCSVLine(header);
-console.info('here');
+
         forEach.call(this.points, function(line) {
             var csvLine = '';
 

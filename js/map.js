@@ -11,7 +11,7 @@ var MapManager = Observable.init({
     markers: [],
     filter: null,
     filtersApplied: [],
-    MAX_WAYPOINTS: 1,
+    MAX_WAYPOINTS: 8,
     directionsSteps: null,
     wrongDirections: [],
     wrongDirectionsContainer: null,
@@ -22,7 +22,7 @@ var MapManager = Observable.init({
     init: function() {
         this.directionsSteps = document.querySelector('#route-steps');
         this.wrongDirectionsContainer = document.querySelector('#address-errors');
-        this.home = new google.maps.LatLng(37.407749, -5.947144);
+        this.home = new google.maps.LatLng(37.407604, -5.94713);
         var mapOptions = {
             center: this.home,
             zoom: 16,
@@ -178,9 +178,16 @@ var MapManager = Observable.init({
     },
 
     _createHomeMarker: function() {
+        var image = {
+            url: 'rs_home_marker.png',
+            size: new google.maps.Size(40, 31),
+            origin: new google.maps.Point(0,0),
+            anchor: new google.maps.Point(0, 31)
+        };
         new google.maps.Marker({
             map: this.map,
-            position: this.home
+            position: this.home,
+            icon: image
         });
     },
 
