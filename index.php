@@ -158,7 +158,7 @@ if (count($_FILES) > 0) {
                 </div>
                 <span class="step-title">Filtros</span>
             </div>
-            <div class="dialog-content">
+            <div class="dialog-content filters-content">
                 <ul class="filters-container">
                 </ul>
             </div>

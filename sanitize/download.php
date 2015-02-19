@@ -20,7 +20,9 @@ if (isset($_POST['file'])) {
 ?>
 
 <html>
-    <head></head>
+    <head>
+        <meta charset="utf-8">
+    </head>
     <body>
         <pre><?php echo trim($file); ?></pre>
     </body>

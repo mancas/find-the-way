@@ -69,7 +69,8 @@ if (count($_FILES) > 0) {
                     'º' => '',
                     'ª' => '',
                     '|' => '',
-                    '@' => ''
+                    '@' => '',
+                    ' ' => ''
                     );
 
         public function __contruct() {
@@ -218,7 +219,7 @@ if (count($_FILES) > 0) {
             $data = fgetcsv($file, 0, ';');
             $chunk = count($data);
             foreach ($data as $d) {
-                $csvHeader[] = $d;
+                $csvHeader[] = strtolower($sanitize->sanitizeString(utf8_encode($d)));
             }
 
             while (($data = fgetcsv($file, 0, ';')) !== false) {
@@ -227,7 +228,7 @@ if (count($_FILES) > 0) {
             ?>
         Sanitize.addPoint({
             <?php foreach ($data as $index => $content) { ?>
-            <?php echo $sanitize->sanitizeString(strtolower($csvHeader[$index])) . ' : \'' .  $content .'\''; ?><?php if($index != ($chunk - 1)) echo ', '; ?>
+            <?php echo $csvHeader[$index] . ' : "' .  utf8_encode($content) .'"'; ?><?php if($index != ($chunk - 1)) echo ', '; ?>
             <?php } ?>
         });
         <?php

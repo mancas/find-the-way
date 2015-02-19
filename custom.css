@@ -646,6 +646,11 @@ input {
 
 /** FILTERS **/
 
+.filters-content {
+    max-height: 300px;
+    overflow-y: scroll !important;
+}
+
 .filters-container li {
     margin-bottom: 15px;
     position: relative;
