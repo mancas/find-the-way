@@ -228,7 +228,7 @@ if (count($_FILES) > 0) {
             ?>
         Sanitize.addPoint({
             <?php foreach ($data as $index => $content) { ?>
-            <?php echo $csvHeader[$index] . ' : "' .  utf8_encode($content) .'"'; ?><?php if($index != ($chunk - 1)) echo ', '; ?>
+            <?php echo $csvHeader[$index] . ' : "' . $content .'"'; ?><?php if($index != ($chunk - 1)) echo ', '; ?>
             <?php } ?>
         });
         <?php

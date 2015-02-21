@@ -48,13 +48,15 @@ var Sanitize = {
             }
 
             var address = self._generateAddress(element);
+            console.info(address);
             // The error has been notified yet
             if (!address) {
                 return;
             }
 
             self.geocoder.geocode({'address': address}, function(results, status) {
-                if (status == google.maps.GeocoderStatus.OK) {
+                console.info(results, status);
+                if (status == google.maps.GeocoderStatus.OK && results[0].geometry.location_type != 'APPROXIMATE') {
                     element.latitude = results[0].geometry.location.lat();
                     element.longitude = results[0].geometry.location.lng();
                 } else {
