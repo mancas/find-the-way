@@ -141,6 +141,13 @@ a:active, a:focus, a:visited, a:link {
     display: none;
 }
 
+#app-body.sanitize-map {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2147000004;
+}
+
 #app-body #app-header {
     height: 40px;
     box-shadow: 0 1px 1px #333333;
@@ -459,6 +466,11 @@ input {
 .modal-dialog .modal-content .btn {
     margin-top: 20px;
     display: inline-block;
+}
+
+.modal-dialog .modal-content .btn-no-margin {
+    display: inline-block;
+    margin: 0;
 }
 
 .modal-dialog .dialog-paginator {

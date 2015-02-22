@@ -165,6 +165,7 @@ if (count($_FILES) > 0) {
                             <tr>
                                 <th>Dirección calculada</th>
                                 <th>Orden</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -198,6 +199,15 @@ if (count($_FILES) > 0) {
         </form>
     </div>
 
+    <div id="app-body" class="sanitize-map" data-visible="false">
+        <div id="app-header">
+            <div class="help">
+            </div>
+        </div>
+        <div id="map">
+        </div>
+    </div>
+
     <script type="text/javascript" src="../js/sanitize_ui.js"> </script>
 
     <?php if(isset($filename)) { ?>
@@ -206,6 +216,7 @@ if (count($_FILES) > 0) {
     </script>
     <script type="text/javascript" src="../js/modal.js"> </script>
     <script type="text/javascript" src="../js/sanitize.js"> </script>
+    <script type="text/javascript" src="../js/sanitize_map.js"> </script>
     <?php } ?>
 
     <script type="text/javascript">
@@ -236,6 +247,7 @@ if (count($_FILES) > 0) {
         fclose($file);
         ?>
         Sanitize.init();
+        SanitizeMap.init();
         <?php } ?>
     </script>
 </body>

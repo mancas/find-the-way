@@ -7,6 +7,7 @@ var SanitizeUI = {
     loadingOverlay: null,
     CSVContainer: null,
     CSVFile: null,
+    viewCSVBtn: null,
 
     init: function() {
         this.inputs = document.querySelectorAll('input');
@@ -17,6 +18,7 @@ var SanitizeUI = {
         this.loadingOverlay = document.querySelector('.loading-overlay');
         this.CSVContainer = document.querySelector('.csv-container');
         this.CSVFile = this.CSVContainer.querySelector('textarea');
+        this.viewCSVBtn = document.querySelector('.csv-explain .btn');
         this._setPlaceholders();
         this.bindEvents();
     },
@@ -82,5 +84,9 @@ var SanitizeUI = {
     addCSVLine: function(CSVLine) {
       var line = CSVLine + '\n';
       this.CSVFile.textContent = this.CSVFile.textContent + line;
+    },
+
+    clearCSV: function() {
+        this.CSVFile.textContent = '';
     }
 };

@@ -109,16 +109,37 @@ var Sanitize = {
         }
 
         var tr = document.createElement('tr');
+        tr.dataset.index = element.orden;
         var tdAddress = document.createElement('td');
         var tdIndex = document.createElement('td');
+        var tdAction = document.createElement('td');
+        var btn = document.createElement('button');
+        btn.textContent = 'Añadir marcador';
+        btn.classList.add('btn');
+        btn.classList.add('btn-no-margin');
+        btn.classList.add('btn-small');
+        tdAction.appendChild(btn);
+        btn.addEventListener('click', function() {
+            SanitizeMap.configureElement(element);
+        }.bind(this));
+
         tdAddress.textContent = address;
         tdIndex.textContent = element.orden;
 
         tr.appendChild(tdAddress);
         tr.appendChild(tdIndex);
+        tr.appendChild(tdAction);
 
         var tbody = this.wrongDirectionsContainer.querySelector('tbody');
         tbody.appendChild(tr);
+    },
+
+    removeWrongDirection: function(index) {
+        var tr = document.querySelector('tr[data-index="' + index + '"]');
+        if (tr) {
+            var tbody = this.wrongDirectionsContainer.querySelector('tbody');
+            tbody.removeChild(tr);
+        }
     },
 
     convertToCSV: function() {
@@ -126,6 +147,7 @@ var Sanitize = {
         if (this.points.length === 0) {
             return;
         }
+        SanitizeUI.viewCSVBtn.disabled = true;
 
         var keys = Object.keys(this.points[0]);
         var header = '';
@@ -139,7 +161,6 @@ var Sanitize = {
 
         forEach.call(this.points, function(line) {
             var csvLine = '';
-
             for (var key in line) {
                 var column = line[key];
                 csvLine += column;
@@ -149,5 +170,7 @@ var Sanitize = {
             }
             SanitizeUI.addCSVLine(csvLine);
         });
+
+        SanitizeUI.viewCSVBtn.disabled = false;
     }
 }
