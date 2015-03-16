@@ -18,9 +18,11 @@ var MapManager = Observable.init({
     wrongDirectionsModalEnabled: false,
     chunk: 5,
     waypointsWarning: null,
+    printButton: null,
 
     init: function() {
         this.directionsSteps = document.querySelector('#route-steps');
+        this.printButton = document.querySelector('#route-steps #print-steps');
         this.wrongDirectionsContainer = document.querySelector('#address-errors');
         this.home = new google.maps.LatLng(37.407604, -5.94713);
         var mapOptions = {
@@ -48,6 +50,7 @@ var MapManager = Observable.init({
             position: 'center',
             draggable: true
         })
+        this.printButton.addEventListener('click', this.printRoute.bind(this));
     },
 
     initFilter: function() {
@@ -131,6 +134,7 @@ var MapManager = Observable.init({
         var province = element.provincia;
         var country = 'España';
         var computedAddress = address;
+        console.info(element);
         if (population.length > 0) {
             computedAddress += ', ' + population;
         }
@@ -323,5 +327,17 @@ var MapManager = Observable.init({
         }
 
         UIManager.openInformationModal();
+    },
+
+    printRoute: function() {
+        var html = this.directionsSteps.querySelector('#step-list').innerHTML;
+        var css = document.head.querySelector('style').innerHTML;
+        var popup_win = "toolbar=yes,location=no,directories=yes,menubar=yes,scrollbars=yes,width=600,height=600,left=100,top=100";
+        var print_form = window.open('','',popup_win);
+        print_form.document.open();
+        html = '<html><head><style type="text/css">' + css +'</style><title>Print Preview</title></head><body>' + html + '</body></html>';
+        print_form.document.write(html);
+        print_form.document.close();
+        print_form.print();
     }
 });

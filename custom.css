@@ -249,6 +249,10 @@ a:active, a:focus, a:visited, a:link {
     padding: 20px;
 }
 
+#route-steps #print-steps {
+    float: right;
+}
+
 #route-steps #header .title {
     font-size: 21px;
     line-height: 40px;

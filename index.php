@@ -367,6 +367,7 @@ if (count($_FILES) > 0) {
                 <span class="icon">!</span>
             </div>
             <span class="title">Indicaciones</span>
+            <button id="print-steps" class="btn">Imprimir</button>
         </div>
         <div id="step-list"></div>
     </div>
